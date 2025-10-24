@@ -1,0 +1,31 @@
+{
+  "generated_at": "2025-10-24 12:57:54",
+  "dataset": "mini_dataset (100 samples)",
+  "experiments": [
+    {
+      "experiment": "Experiment1",
+      "name": "两阶段检测",
+      "architecture": {
+        "type": "Two-Stage Detection",
+        "backbone": "RemoteCLIP RN50",
+        "method": "Region-based Retrieval"
+      },
+      "parameters": {
+        "total": 102007137,
+        "trainable": 102007137,
+        "frozen": 0,
+        "total_M": 102.007137,
+        "trainable_M": 102.007137
+      },
+      "performance": {
+        "avg_time_ms": 292.8475618362427,
+        "fps": 3.4147458620782016
+      },
+      "features": {
+        "stage1": "Proposal Generation + Classification",
+        "stage2": "Target Detection + BBox Refinement",
+        "wordnet": "Vocabulary Enhancement"
+      }
+    }
+  ]
+}
