@@ -1,19 +1,8 @@
 {
-  "seen_ratio": 0.6,
-  "seen_classes": [
-    "harbor",
-    "basketball-court",
-    "baseball-field",
-    "vehicle",
-    "tennis-court",
-    "storage-tank"
-  ],
-  "unseen_classes": [
-    "airplane",
-    "ship",
-    "bridge",
-    "stadium"
-  ],
-  "num_seen": 6,
-  "num_unseen": 4
+  "name": "seen_60",
+  "total_samples": 100,
+  "num_seen_classes": 10,
+  "num_unseen_classes": 10,
+  "train_samples": 60,
+  "test_samples": 40
 }
