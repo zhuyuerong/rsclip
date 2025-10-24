@@ -26,7 +26,6 @@ class DefaultConfig:
     remoteclip_model: str = 'RN50'      # RemoteCLIP模型
     remoteclip_checkpoint: str = 'checkpoints/RemoteCLIP-RN50.pt'
     freeze_remoteclip: bool = True      # 冻结RemoteCLIP
-    txt_dim: int = 1024                 # 文本特征维度
     
     # 文本特征配置
     txt_dim: int = 1024                 # 文本特征维度
