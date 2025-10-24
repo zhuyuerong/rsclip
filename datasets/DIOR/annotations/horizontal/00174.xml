@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <filename>00174.jpg</filename>
+    <source>
+        <database>DIOR</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>dam</name>
+        <pose>Unspecified</pose>
+        <bndbox>
+            <xmin>237</xmin>
+            <ymin>301</ymin>
+            <xmax>702</xmax>
+            <ymax>695</ymax>
+        </bndbox>
+    </object>
+</annotation>

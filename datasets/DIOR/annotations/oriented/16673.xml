@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-test.zip/JPEGImages-test/JPEGImages-test</folder>
+    <filename>16673.jpg</filename>
+    <path>/JPEGImages-test.zip/JPEGImages-test/JPEGImages-test</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>stadium</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>547</x_left_top>
+            <y_left_top>95</y_left_top>
+            <x_right_top>632</x_right_top>
+            <y_right_top>120</y_right_top>
+            <x_right_bottom>603</x_right_bottom>
+            <y_right_bottom>216</y_right_bottom>
+            <x_left_bottom>519</x_left_bottom>
+            <y_left_bottom>190</y_left_bottom>
+        </robndbox>
+        <angle>16.6</angle>
+    </object>
+</annotation>

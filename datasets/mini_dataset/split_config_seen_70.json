@@ -1,0 +1,19 @@
+{
+  "seen_ratio": 0.7,
+  "seen_classes": [
+    "airplane",
+    "tennis-court",
+    "basketball-court",
+    "stadium",
+    "vehicle",
+    "storage-tank",
+    "bridge"
+  ],
+  "unseen_classes": [
+    "harbor",
+    "baseball-field",
+    "ship"
+  ],
+  "num_seen": 7,
+  "num_unseen": 3
+}

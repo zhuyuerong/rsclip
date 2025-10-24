@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</folder>
+    <filename>06498.jpg</filename>
+    <path>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>ship</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>602</x_left_top>
+            <y_left_top>302</y_left_top>
+            <x_right_top>664</x_right_top>
+            <y_right_top>342</y_right_top>
+            <x_right_bottom>447</x_right_bottom>
+            <y_right_bottom>673</y_right_bottom>
+            <x_left_bottom>385</x_left_bottom>
+            <y_left_bottom>633</y_left_bottom>
+        </robndbox>
+        <angle>33.2</angle>
+    </object>
+</annotation>

@@ -1,0 +1,202 @@
+[
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000001.bmp",
+    "original_path": "datasets/hrsc2016/images/100000001.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000006.bmp",
+    "original_path": "datasets/hrsc2016/images/100000006.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000007.bmp",
+    "original_path": "datasets/hrsc2016/images/100000007.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000008.bmp",
+    "original_path": "datasets/hrsc2016/images/100000008.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000010.bmp",
+    "original_path": "datasets/hrsc2016/images/100000010.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000013.bmp",
+    "original_path": "datasets/hrsc2016/images/100000013.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000022.bmp",
+    "original_path": "datasets/hrsc2016/images/100000022.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000023.bmp",
+    "original_path": "datasets/hrsc2016/images/100000023.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000026.bmp",
+    "original_path": "datasets/hrsc2016/images/100000026.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000028.bmp",
+    "original_path": "datasets/hrsc2016/images/100000028.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000035.bmp",
+    "original_path": "datasets/hrsc2016/images/100000035.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000054.bmp",
+    "original_path": "datasets/hrsc2016/images/100000054.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000794.bmp",
+    "original_path": "datasets/hrsc2016/images/100000794.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000798.bmp",
+    "original_path": "datasets/hrsc2016/images/100000798.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000803.bmp",
+    "original_path": "datasets/hrsc2016/images/100000803.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000810.bmp",
+    "original_path": "datasets/hrsc2016/images/100000810.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000811.bmp",
+    "original_path": "datasets/hrsc2016/images/100000811.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000836.bmp",
+    "original_path": "datasets/hrsc2016/images/100000836.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000837.bmp",
+    "original_path": "datasets/hrsc2016/images/100000837.bmp"
+  },
+  {
+    "dataset": "hrsc2016",
+    "image_name": "hrsc2016_100000838.bmp",
+    "original_path": "datasets/hrsc2016/images/100000838.bmp"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_01002.jpg",
+    "original_path": "datasets/DIOR/images/trainval/01002.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_01446.jpg",
+    "original_path": "datasets/DIOR/images/trainval/01446.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_01540.jpg",
+    "original_path": "datasets/DIOR/images/trainval/01540.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_02424.jpg",
+    "original_path": "datasets/DIOR/images/trainval/02424.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_02477.jpg",
+    "original_path": "datasets/DIOR/images/trainval/02477.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_03401.jpg",
+    "original_path": "datasets/DIOR/images/trainval/03401.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_04214.jpg",
+    "original_path": "datasets/DIOR/images/trainval/04214.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_04427.jpg",
+    "original_path": "datasets/DIOR/images/trainval/04427.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_04432.jpg",
+    "original_path": "datasets/DIOR/images/trainval/04432.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_05386.jpg",
+    "original_path": "datasets/DIOR/images/trainval/05386.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_05449.jpg",
+    "original_path": "datasets/DIOR/images/trainval/05449.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_05513.jpg",
+    "original_path": "datasets/DIOR/images/trainval/05513.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_05754.jpg",
+    "original_path": "datasets/DIOR/images/trainval/05754.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_06130.jpg",
+    "original_path": "datasets/DIOR/images/trainval/06130.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_06831.jpg",
+    "original_path": "datasets/DIOR/images/trainval/06831.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_07271.jpg",
+    "original_path": "datasets/DIOR/images/trainval/07271.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_09580.jpg",
+    "original_path": "datasets/DIOR/images/trainval/09580.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_09811.jpg",
+    "original_path": "datasets/DIOR/images/trainval/09811.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_11400.jpg",
+    "original_path": "datasets/DIOR/images/trainval/11400.jpg"
+  },
+  {
+    "dataset": "DIOR",
+    "image_name": "DIOR_11401.jpg",
+    "original_path": "datasets/DIOR/images/trainval/11401.jpg"
+  }
+]

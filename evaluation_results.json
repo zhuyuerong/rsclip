@@ -1,0 +1,10 @@
+{
+  "mAP_seen": 0.9999999925,
+  "mAP_unseen": 0.0,
+  "mean_IoU": 0.6105808656036447,
+  "num_seen_classes": 2,
+  "num_unseen_classes": 1,
+  "total_predictions": 3,
+  "total_ground_truths": 4,
+  "iou_threshold": 0.5
+}

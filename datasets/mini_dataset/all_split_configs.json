@@ -1,0 +1,78 @@
+{
+  "seen_50": {
+    "seen_ratio": 0.5,
+    "seen_classes": [
+      "storage-tank",
+      "basketball-court",
+      "baseball-field",
+      "vehicle",
+      "harbor"
+    ],
+    "unseen_classes": [
+      "stadium",
+      "bridge",
+      "ship",
+      "tennis-court",
+      "airplane"
+    ],
+    "num_seen": 5,
+    "num_unseen": 5
+  },
+  "seen_60": {
+    "seen_ratio": 0.6,
+    "seen_classes": [
+      "harbor",
+      "basketball-court",
+      "baseball-field",
+      "vehicle",
+      "tennis-court",
+      "storage-tank"
+    ],
+    "unseen_classes": [
+      "airplane",
+      "ship",
+      "bridge",
+      "stadium"
+    ],
+    "num_seen": 6,
+    "num_unseen": 4
+  },
+  "seen_70": {
+    "seen_ratio": 0.7,
+    "seen_classes": [
+      "airplane",
+      "tennis-court",
+      "basketball-court",
+      "stadium",
+      "vehicle",
+      "storage-tank",
+      "bridge"
+    ],
+    "unseen_classes": [
+      "harbor",
+      "baseball-field",
+      "ship"
+    ],
+    "num_seen": 7,
+    "num_unseen": 3
+  },
+  "seen_80": {
+    "seen_ratio": 0.8,
+    "seen_classes": [
+      "vehicle",
+      "stadium",
+      "airplane",
+      "baseball-field",
+      "tennis-court",
+      "storage-tank",
+      "basketball-court",
+      "ship"
+    ],
+    "unseen_classes": [
+      "harbor",
+      "bridge"
+    ],
+    "num_seen": 8,
+    "num_unseen": 2
+  }
+}

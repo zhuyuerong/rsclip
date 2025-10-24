@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</folder>
+    <filename>11654.jpg</filename>
+    <path>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>tenniscourt</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>365</x_left_top>
+            <y_left_top>302</y_left_top>
+            <x_right_top>429</x_right_top>
+            <y_right_top>349</y_right_top>
+            <x_right_bottom>330</x_right_bottom>
+            <y_right_bottom>485</y_right_bottom>
+            <x_left_bottom>266</x_left_bottom>
+            <y_left_bottom>438</y_left_bottom>
+        </robndbox>
+        <angle>36.2</angle>
+    </object>
+</annotation>

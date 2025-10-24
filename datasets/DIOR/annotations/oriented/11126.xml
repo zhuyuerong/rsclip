@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</folder>
+    <filename>11126.jpg</filename>
+    <path>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>airplane</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>269</x_left_top>
+            <y_left_top>412</y_left_top>
+            <x_right_top>417</x_right_top>
+            <y_right_top>291</y_right_top>
+            <x_right_bottom>542</x_right_bottom>
+            <y_right_bottom>445</y_right_bottom>
+            <x_left_bottom>394</x_left_bottom>
+            <y_left_bottom>565</y_left_bottom>
+        </robndbox>
+        <angle>-39.2</angle>
+    </object>
+</annotation>

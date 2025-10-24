@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/机场数据.zip/机场数据</folder>
+    <filename>01126.jpg</filename>
+    <path>/机场数据.zip/机场数据</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>airport</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>68</x_left_top>
+            <y_left_top>395</y_left_top>
+            <x_right_top>675</x_right_top>
+            <y_right_top>13</y_right_top>
+            <x_right_bottom>725</x_right_bottom>
+            <y_right_bottom>94</y_right_bottom>
+            <x_left_bottom>119</x_left_bottom>
+            <y_left_bottom>476</y_left_bottom>
+        </robndbox>
+        <angle>-32.2</angle>
+    </object>
+</annotation>

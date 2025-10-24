@@ -1,0 +1,99 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+remoteclip/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch - 排除所有权重文件
+*.pth
+*.pt
+*.ckpt
+
+# TensorBoard
+runs/
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Outputs
+outputs/
+experiment_results/
+evaluation_results/
+
+# Large files
+*.tar
+*.gz
+*.zip
+*.h5
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# 图片文件
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.gif
+*.tiff
+*.webp
+
+# 数据集图片（太大，不上传）
+datasets/DIOR/images/
+datasets/DOTA/
+datasets/hrsc2016/images/
+
+# 保留数据集的结构文件和说明
+!datasets/DIOR/README.md
+!datasets/DIOR/splits/
+!datasets/DIOR/organize_dior.py
+!datasets/mini_dataset/
+
+# 所有checkpoints和权重文件
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+

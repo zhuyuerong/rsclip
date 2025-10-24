@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</folder>
+    <filename>09754.jpg</filename>
+    <path>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>bridge</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>474</x_left_top>
+            <y_left_top>508</y_left_top>
+            <x_right_top>705</x_right_top>
+            <y_right_top>594</y_right_top>
+            <x_right_bottom>673</x_right_bottom>
+            <y_right_bottom>680</y_right_bottom>
+            <x_left_bottom>442</x_left_bottom>
+            <y_left_bottom>593</y_left_bottom>
+        </robndbox>
+        <angle>20.6</angle>
+    </object>
+</annotation>

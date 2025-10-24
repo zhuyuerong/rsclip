@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</folder>
+    <filename>02612.jpg</filename>
+    <path>/JPEGImages-trainval.zip/JPEGImages-trainval/JPEGImages-trainval</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>groundtrackfield</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>381</x_left_top>
+            <y_left_top>33</y_left_top>
+            <x_right_top>679</x_right_top>
+            <y_right_top>90</y_right_top>
+            <x_right_bottom>552</x_right_bottom>
+            <y_right_bottom>758</y_right_bottom>
+            <x_left_bottom>254</x_left_bottom>
+            <y_left_bottom>701</y_left_bottom>
+        </robndbox>
+        <angle>10.8</angle>
+    </object>
+</annotation>

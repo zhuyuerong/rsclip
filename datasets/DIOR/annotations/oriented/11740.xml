@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<annotation>
+    <folder>/JPEGImages-test.zip/JPEGImages-test/JPEGImages-test</folder>
+    <filename>11740.jpg</filename>
+    <path>/JPEGImages-test.zip/JPEGImages-test/JPEGImages-test</path>
+    <source>
+        <database>Unknown</database>
+    </source>
+    <size>
+        <width>800</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <type>robndbox</type>
+        <name>chimney</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <robndbox>
+            <x_left_top>399</x_left_top>
+            <y_left_top>403</y_left_top>
+            <x_right_top>490</x_right_top>
+            <y_right_top>367</y_right_top>
+            <x_right_bottom>541</x_right_bottom>
+            <y_right_bottom>497</y_right_bottom>
+            <x_left_bottom>450</x_left_bottom>
+            <y_left_bottom>533</y_left_bottom>
+        </robndbox>
+        <angle>-21.2</angle>
+    </object>
+</annotation>
