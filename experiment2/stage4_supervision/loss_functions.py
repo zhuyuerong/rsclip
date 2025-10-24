@@ -8,7 +8,7 @@ L_total = λ_box · L_box + λ_gc · L_GlobalContrast + λ_pt · L_position_text
 
 import torch
 import torch.nn as nn
-from typing import Dict
+from typing import Dict, Tuple
 
 from .box_loss import BoxLoss
 from .global_contrast_loss import GlobalContrastLoss

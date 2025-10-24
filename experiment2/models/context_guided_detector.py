@@ -65,7 +65,7 @@ class ContextGuidedDetector(nn.Module):
         self.image_encoder = CLIPImageEncoder(
             model_name=model_name,
             pretrained_path=pretrained_path,
-            freeze_backbone=freeze_clip
+            freeze=freeze_clip
         )
         
         self.text_encoder = CLIPTextEncoder(
