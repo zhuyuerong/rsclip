@@ -28,61 +28,62 @@ from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper, clip_featur
 from utils.seen_unseen_split import SeenUnseenDataset
 
 
-def generate_multi_class_heatmaps(model, image, classes_in_image, all_dior_classes, all_dior_prompts, config, layers):
+def generate_multi_mode_heatmaps(models, image, query_class, all_dior_classes, all_dior_prompts, config, layers):
     """
-    为一张图像的每个类别生成热图
+    为一个查询类别生成多种模式的热图
     
     Args:
-        model: CLIPSurgeryWrapper
+        models: dict of {mode_name: CLIPSurgeryWrapper}
         image: [1, 3, H, W] single image
-        classes_in_image: list of class names in this image
+        query_class: str (query class name)
         all_dior_classes: list of 20 raw class names
-        all_dior_prompts: list of 20 prompts ("an aerial photo of ...")
+        all_dior_prompts: list of 20 prompts
         config: Config
         layers: list of layer indices
     
     Returns:
-        heatmaps_per_class: {class_name: {layer_idx: [1, 1, H, W]}}
+        heatmaps_per_mode: {mode_name: {layer_idx: [1, 1, H, W]}}
     """
-    # Extract multi-layer features
-    layer_features_dict = model.get_layer_features(image, layer_indices=layers)
+    class_idx = all_dior_classes.index(query_class)
+    heatmaps_per_mode = {}
     
-    # Encode all class texts
-    all_text_features = model.encode_text(all_dior_prompts)
-    all_text_features = F.normalize(all_text_features, dim=-1)
-    
-    heatmaps_per_class = {}
-    
-    # For each class in this image
-    for query_class in classes_in_image:
-        class_idx = all_dior_classes.index(query_class)
-        heatmaps_per_class[query_class] = {}
+    for mode_name, model in models.items():
+        # Extract multi-layer features
+        layer_features_dict = model.get_layer_features(image, layer_indices=layers)
+        
+        # Encode all class texts
+        all_text_features = model.encode_text(all_dior_prompts)
+        all_text_features = F.normalize(all_text_features, dim=-1)
+        
+        heatmaps_per_mode[mode_name] = {}
         
         for layer_idx in layers:
             image_feature = layer_features_dict[layer_idx]  # [1, N+1, C]
             
-            # Use Surgery to compute similarity
-            similarity = clip_feature_surgery(image_feature, all_text_features, t=2)
-            # [1, N_patches, N_classes]
+            # Use Surgery or standard based on mode
+            if "Surgery" in mode_name:
+                similarity = clip_feature_surgery(image_feature, all_text_features, t=2)
+            else:
+                patch_features = image_feature[:, 1:, :]  # [1, N_patches, C]
+                similarity = patch_features @ all_text_features.t()  # [1, N_patches, N_classes]
             
             # Extract similarity for this class
             target_similarity = similarity[:, :, class_idx:class_idx+1]  # [1, N_patches, 1]
             
             # Generate heatmap
             heatmap = get_similarity_map(target_similarity, (config.image_size, config.image_size))
-            # [1, 1, H, W]
-            
-            heatmaps_per_class[query_class][layer_idx] = heatmap
+            heatmaps_per_mode[mode_name][layer_idx] = heatmap
     
-    return heatmaps_per_class
+    return heatmaps_per_mode
 
 
-def visualize_single_class_heatmap(image_data, query_class, heatmap_dict, bboxes, layers, output_path):
+def visualize_5mode_comparison(image_data, query_class, heatmaps_per_mode, bboxes, layers, modes, output_path):
     """
-    Visualize heatmap for a single class query
+    Visualize 5-mode comparison for a single class query
     
-    Layout: 1 row x (1 + N_layers) columns
+    Layout: 5 modes x (1 original + 12 layers) columns
     """
+    num_modes = len(modes)
     num_layers = len(layers)
     
     # Denormalize image
@@ -97,65 +98,61 @@ def visualize_single_class_heatmap(image_data, query_class, heatmap_dict, bboxes
     scale_x = 224.0 / original_w
     scale_y = 224.0 / original_h
     
-    # Create figure: 1 row x (1 + num_layers) columns
-    fig, axes = plt.subplots(1, num_layers + 1, 
-                            figsize=(2.5 * (num_layers + 1), 3.0))
+    # Create figure: 5 modes x (1 + num_layers) columns
+    fig, axes = plt.subplots(num_modes, num_layers + 1, 
+                            figsize=(2.5 * (num_layers + 1), 2.5 * num_modes))
     
-    # Column 0: Original image with GT boxes
-    axes[0].imshow(img)
-    prompt = f"an aerial photo of {query_class}"
-    title = f'{prompt}\nID: {image_data["image_id"]}'
-    axes[0].set_title(title, fontsize=8)
-    axes[0].axis('off')
-    
-    # Draw GT boxes: query class in green (thick), others in yellow (thin)
-    for bbox in bboxes:
-        xmin = bbox['xmin'] * scale_x
-        ymin = bbox['ymin'] * scale_y
-        xmax = bbox['xmax'] * scale_x
-        ymax = bbox['ymax'] * scale_y
-        w, h = xmax - xmin, ymax - ymin
+    # For each mode
+    for row, mode_name in enumerate(modes):
+        # Column 0: Original image with query class GT boxes ONLY
+        axes[row, 0].imshow(img)
+        prompt = f"an aerial photo of {query_class}"
+        title = f'{mode_name}\n{prompt}\nID: {image_data["image_id"]}'
+        axes[row, 0].set_title(title, fontsize=6.5)
+        axes[row, 0].axis('off')
         
-        bbox_class = bbox.get('class', query_class)
-        if bbox_class == query_class:
-            color = 'lime'
-            linewidth = 3.0
-        else:
-            color = 'yellow'
-            linewidth = 1.2
-        
-        rect = patches.Rectangle((xmin, ymin), w, h, 
-                                linewidth=linewidth, edgecolor=color, facecolor='none')
-        axes[0].add_patch(rect)
-    
-    # Columns 1-N: Layer heatmaps
-    for col, layer_idx in enumerate(layers):
-        heatmap = heatmap_dict[layer_idx][0, 0].detach().cpu().numpy()
-        
-        axes[col + 1].imshow(img)
-        axes[col + 1].imshow(heatmap, cmap='jet', alpha=0.5)
-        axes[col + 1].set_title(f'L{layer_idx}', fontsize=9)
-        axes[col + 1].axis('off')
-        
-        # Draw GT boxes on heatmap
+        # Draw ONLY query class GT boxes (green)
         for bbox in bboxes:
+            bbox_class = bbox.get('class', query_class)
+            if bbox_class != query_class:
+                continue  # Skip non-query class boxes
+            
             xmin = bbox['xmin'] * scale_x
             ymin = bbox['ymin'] * scale_y
             xmax = bbox['xmax'] * scale_x
             ymax = bbox['ymax'] * scale_y
             w, h = xmax - xmin, ymax - ymin
             
-            bbox_class = bbox.get('class', query_class)
-            if bbox_class == query_class:
-                color = 'lime'
-                linewidth = 3.0
-            else:
-                color = 'yellow'
-                linewidth = 1.2
-            
             rect = patches.Rectangle((xmin, ymin), w, h, 
-                                    linewidth=linewidth, edgecolor=color, facecolor='none')
-            axes[col + 1].add_patch(rect)
+                                    linewidth=2.5, edgecolor='lime', facecolor='none')
+            axes[row, 0].add_patch(rect)
+        
+        # Columns 1-N: Layer heatmaps
+        for col, layer_idx in enumerate(layers):
+            heatmap = heatmaps_per_mode[mode_name][layer_idx][0, 0].detach().cpu().numpy()
+            
+            axes[row, col + 1].imshow(img)
+            axes[row, col + 1].imshow(heatmap, cmap='jet', alpha=0.5)
+            
+            if row == 0:
+                axes[row, col + 1].set_title(f'L{layer_idx}', fontsize=8)
+            axes[row, col + 1].axis('off')
+            
+            # Draw ONLY query class GT boxes on heatmap
+            for bbox in bboxes:
+                bbox_class = bbox.get('class', query_class)
+                if bbox_class != query_class:
+                    continue
+                
+                xmin = bbox['xmin'] * scale_x
+                ymin = bbox['ymin'] * scale_y
+                xmax = bbox['xmax'] * scale_x
+                ymax = bbox['ymax'] * scale_y
+                w, h = xmax - xmin, ymax - ymin
+                
+                rect = patches.Rectangle((xmin, ymin), w, h, 
+                                        linewidth=2.5, edgecolor='lime', facecolor='none')
+                axes[row, col + 1].add_patch(rect)
     
     plt.tight_layout(pad=0.5)
     plt.savefig(output_path, dpi=200, bbox_inches='tight')
@@ -179,20 +176,35 @@ def main():
     
     dior_prompts = [f"an aerial photo of {cls}" for cls in dior_classes]
     
+    # 5 modes
+    mode_configs = {
+        '1.With Surgery': {'use_surgery': True, 'use_vv': False},
+        '2.Without Surgery': {'use_surgery': False, 'use_vv': False},
+        '3.With VV': {'use_surgery': False, 'use_vv': False},  # Placeholder
+        '4.Standard QKV': {'use_surgery': False, 'use_vv': False},
+        '5.Complete Surgery': {'use_surgery': True, 'use_vv': False},  # Placeholder
+    }
+    
     print("=" * 70)
-    print("Multi-Class Heatmap Generator")
+    print("Multi-Class Heatmap Generator (5-Mode Comparison)")
     print("=" * 70)
     print(f"Dataset: {args.dataset}")
     print(f"Layers: {args.layers}")
+    print(f"Modes: {len(mode_configs)}")
     
     # Setup
     config = Config()
     config.dataset_root = args.dataset
     config.device = "cuda" if torch.cuda.is_available() else "cpu"
-    config.use_surgery = True  # Use Surgery
-    config.use_vv_mechanism = False
     
-    model = CLIPSurgeryWrapper(config)
+    # Load all models
+    print("\nLoading models for all modes...")
+    models = {}
+    for mode_name, mode_config in mode_configs.items():
+        config.use_surgery = mode_config['use_surgery']
+        config.use_vv_mechanism = mode_config['use_vv']
+        models[mode_name] = CLIPSurgeryWrapper(config)
+        print(f"  {mode_name}: loaded")
     
     # Load dataset
     unseen_classes = ['airplane', 'bridge', 'storagetank', 'vehicle', 'windmill']
@@ -230,22 +242,26 @@ def main():
             'original_size': sample['original_size']
         }
         
-        # Generate heatmaps for each unique class
-        print(f"Generating heatmaps for {len(unique_classes)} classes...")
-        heatmaps_per_class = generate_multi_class_heatmaps(
-            model, image_tensor, unique_classes, 
-            dior_classes, dior_prompts, config, args.layers
-        )
+        # Generate heatmaps for each unique class (5 modes per class)
+        print(f"Generating 5-mode heatmaps for {len(unique_classes)} classes...")
         
-        # Visualize: generate one image per class
         for query_class in unique_classes:
-            output_path = output_dir / f'{sample["image_id"]}_{query_class}.png'
-            visualize_single_class_heatmap(
-                image_data, query_class, heatmaps_per_class[query_class],
-                sample['bboxes'], args.layers, output_path
+            print(f"  Query: {query_class}")
+            
+            # Generate heatmaps for all 5 modes
+            heatmaps_per_mode = generate_multi_mode_heatmaps(
+                models, image_tensor, query_class,
+                dior_classes, dior_prompts, config, args.layers
             )
             
-            print(f"  Saved: {output_path.name}")
+            # Visualize 5-mode comparison
+            output_path = output_dir / f'{sample["image_id"]}_{query_class}.png'
+            visualize_5mode_comparison(
+                image_data, query_class, heatmaps_per_mode,
+                sample['bboxes'], args.layers, list(mode_configs.keys()), output_path
+            )
+            
+            print(f"    Saved: {output_path.name}")
         
         processed += 1
     
