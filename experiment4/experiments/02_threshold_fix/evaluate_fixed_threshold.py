@@ -16,13 +16,13 @@ from collections import defaultdict
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
-from experiment4.config import Config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.data.dataset import get_dataloaders
-from experiment4.utils.heatmap_generator import generate_similarity_heatmap, compute_bbox_score
-from experiment4.utils.heatmap_generator_v2 import generate_bboxes_from_heatmap_v2, generate_bboxes_topk
-from experiment4.utils.map_calculator import calculate_map
-from experiment4.utils.visualization import visualize_heatmap_and_boxes, save_visualization
+from experiment4.core.config import Config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.data.dataset import get_dataloaders
+from experiment4.core.utils.heatmap_generator import generate_similarity_heatmap, compute_bbox_score
+from experiment4.core.utils.heatmap_generator_v2 import generate_bboxes_from_heatmap_v2, generate_bboxes_topk
+from experiment4.core.utils.map_calculator import calculate_map
+from experiment4.core.utils.visualization import visualize_heatmap_and_boxes, save_visualization
 
 
 def evaluate_with_method(model, val_loader, bbox_method, method_name, config):
@@ -73,7 +73,7 @@ def evaluate_with_method(model, val_loader, bbox_method, method_name, config):
             # 根据方法生成检测框
             if bbox_method == "v1_normalized":
                 # 原始方法（归一化+百分位）
-                from experiment4.utils.heatmap_generator import generate_bboxes_from_heatmap
+                from experiment4.core.utils.heatmap_generator import generate_bboxes_from_heatmap
                 pred_bboxes = generate_bboxes_from_heatmap(heatmap, threshold_percentile=75)
             elif bbox_method == "v2_raw_percentile":
                 # 修复方法1（原始值百分位）

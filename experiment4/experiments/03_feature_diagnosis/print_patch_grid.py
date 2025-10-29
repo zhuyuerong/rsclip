@@ -15,9 +15,9 @@ from pathlib import Path
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
-from experiment4.config import Config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.data.dataset import get_dataloaders
+from experiment4.core.config import Config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.data.dataset import get_dataloaders
 
 
 def identify_gt_patches(gt_bbox, grid_size=7, image_size=224):

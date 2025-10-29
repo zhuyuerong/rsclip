@@ -19,10 +19,10 @@ import matplotlib.patches as patches
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
-from experiment4.config import Config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.data.dataset import get_dataloaders
-from experiment4.utils.map_calculator import calculate_map
+from experiment4.core.config import Config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.data.dataset import get_dataloaders
+from experiment4.core.utils.map_calculator import calculate_map
 from collections import defaultdict
 
 
@@ -147,7 +147,7 @@ def main():
             text_features = model.encode_text([class_names[i]])
             
             # 生成两种热图
-            from experiment4.utils.heatmap_generator import generate_similarity_heatmap
+            from experiment4.core.utils.heatmap_generator import generate_similarity_heatmap
             heatmap_normal = generate_similarity_heatmap(image_features, text_features)[0, :, :, 0].cpu().numpy()
             heatmap_inverted = generate_similarity_heatmap_inverted(image_features, text_features)[0, :, :, 0].cpu().numpy()
             

@@ -14,11 +14,11 @@ import numpy as np
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from experiment4.config import get_config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.models.decomposer import TextGuidedDecomposer, ImageOnlyDecomposer
-from experiment4.models.noise_filter import RuleBasedDenoiser
-from experiment4.data.dataset import get_dataloaders
+from experiment4.core.config import get_config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.models.decomposer import TextGuidedDecomposer, ImageOnlyDecomposer
+from experiment4.core.models.noise_filter import RuleBasedDenoiser
+from experiment4.core.data.dataset import get_dataloaders
 
 
 class SeenInference:

@@ -22,11 +22,11 @@ from collections import defaultdict
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
-from experiment4.config import Config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.data.dataset import get_dataloaders
-from experiment4.utils.heatmap_generator_v2 import generate_bboxes_from_heatmap_v2, compute_bbox_score
-from experiment4.utils.map_calculator import calculate_map
+from experiment4.core.config import Config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.data.dataset import get_dataloaders
+from experiment4.core.utils.heatmap_generator_v2 import generate_bboxes_from_heatmap_v2, compute_bbox_score
+from experiment4.core.utils.map_calculator import calculate_map
 
 
 def extract_raw_remoteclip_features(clip_model, images):

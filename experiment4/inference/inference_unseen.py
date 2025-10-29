@@ -16,11 +16,11 @@ import matplotlib.pyplot as plt
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from experiment4.config import get_config
-from experiment4.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.models.decomposer import ImageOnlyDecomposer
-from experiment4.models.noise_filter import RuleBasedDenoiser
-from experiment4.data.dataset import MiniDataset, UnseenDataset
+from experiment4.core.config import get_config
+from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
+from experiment4.core.models.decomposer import ImageOnlyDecomposer
+from experiment4.core.models.noise_filter import RuleBasedDenoiser
+from experiment4.core.data.dataset import MiniDataset, UnseenDataset
 
 
 class UnseenInference:
