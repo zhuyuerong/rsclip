@@ -85,17 +85,20 @@ def generate_text_guided_vvt_heatmaps(model, images, text_queries, all_class_nam
     return heatmaps
 
 
-def visualize_multi_layer_heatmaps(heatmaps, images, class_names, layers, output_dir):
+def visualize_multi_layer_heatmaps(heatmaps, images, class_names, bboxes_batch, layers, output_dir):
     """
-    可视化多层热图
+    可视化多层热图（带GT边界框）
     
     Args:
         heatmaps: {layer_idx: [B, N_classes, H, W]}
         images: [B, 3, H, W]
         class_names: list of str
+        bboxes_batch: list of bbox lists
         layers: list of layer indices
         output_dir: 输出目录
     """
+    import matplotlib.patches as patches
+    
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     
@@ -117,6 +120,16 @@ def visualize_multi_layer_heatmaps(heatmaps, images, class_names, layers, output
         axes[0].set_title(f'原图\n{class_names[b]}', fontsize=10)
         axes[0].axis('off')
         
+        # 在原图上绘制GT边界框
+        if b < len(bboxes_batch) and len(bboxes_batch[b]) > 0:
+            for bbox in bboxes_batch[b]:
+                xmin, ymin = bbox['xmin'], bbox['ymin']
+                xmax, ymax = bbox['xmax'], bbox['ymax']
+                w, h = xmax - xmin, ymax - ymin
+                rect = patches.Rectangle((xmin, ymin), w, h, 
+                                        linewidth=2, edgecolor='lime', facecolor='none')
+                axes[0].add_patch(rect)
+        
         # 显示各层热图
         for i, layer_idx in enumerate(layers):
             heatmap = heatmaps[layer_idx][b, 0].detach().cpu().numpy()  # 取第一个类别
@@ -126,6 +139,16 @@ def visualize_multi_layer_heatmaps(heatmaps, images, class_names, layers, output
             axes[i+1].imshow(heatmap, cmap='jet', alpha=0.5)
             axes[i+1].set_title(f'Layer {layer_idx}', fontsize=10)
             axes[i+1].axis('off')
+            
+            # 在热图上也绘制GT边界框
+            if b < len(bboxes_batch) and len(bboxes_batch[b]) > 0:
+                for bbox in bboxes_batch[b]:
+                    xmin, ymin = bbox['xmin'], bbox['ymin']
+                    xmax, ymax = bbox['xmax'], bbox['ymax']
+                    w, h = xmax - xmin, ymax - ymin
+                    rect = patches.Rectangle((xmin, ymin), w, h, 
+                                            linewidth=2, edgecolor='lime', facecolor='none')
+                    axes[i+1].add_patch(rect)
         
         plt.tight_layout()
         plt.savefig(output_dir / f'text_guided_vvt_sample{b}.png', dpi=150, bbox_inches='tight')
@@ -245,7 +268,7 @@ def main():
     
     # 可视化
     output_dir = Path(__file__).parent  # 保存在当前实验目录
-    visualize_multi_layer_heatmaps(heatmaps, images, all_class_names, args.layers, output_dir)
+    visualize_multi_layer_heatmaps(heatmaps, images, all_class_names, all_bboxes, args.layers, output_dir)
     
     # 分析GT区域响应
     print(f"\n分析GT区域响应强度...")
