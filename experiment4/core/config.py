@@ -76,10 +76,17 @@ class Config:
     sparsity_method = "topk"  # "topk" or "threshold"
     sparsity_schedule = "constant"  # "constant" or "increasing"
     
-    # ===== VV机制配置 =====
-    use_vv_mechanism = True  # 是否使用VV机制
-    num_vv_blocks = 6  # 应用VV机制的层数（从后往前）
+    # ===== 模式控制 =====
+    use_surgery = False  # 是否使用Feature Surgery去冗余
+    use_vv_mechanism = False  # 是否使用VV机制
+    num_vv_blocks = 6  # VV机制应用的层数（从后往前）
     vv_scale_multiplier = 1.0  # VV路径的温度参数
+    
+    # ===== 多层分析配置 =====
+    analysis_layers = [1, 6, 9, 12]  # 要分析的层（首、中、后、末）
+    
+    # ===== Seen/Unseen划分配置 =====
+    unseen_class_names = ['airplane', 'bridge', 'storagetank', 'vehicle', 'windmill']  # 5类unseen
     
     # ===== 设备配置 =====
     device = "cuda" if torch.cuda.is_available() else "cpu"
