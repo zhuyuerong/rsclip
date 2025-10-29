@@ -77,14 +77,12 @@ def generate_multi_class_heatmaps(model, image, classes_in_image, all_dior_class
     return heatmaps_per_class
 
 
-def visualize_multi_class_comparison(image_data, heatmaps_per_class, bboxes, layers, output_path):
+def visualize_single_class_heatmap(image_data, query_class, heatmap_dict, bboxes, layers, output_path):
     """
-    Visualize heatmaps for different classes in the same image
+    Visualize heatmap for a single class query
     
-    Layout: N_classes rows x (1 + 12 layers) columns
+    Layout: 1 row x (1 + N_layers) columns
     """
-    classes = list(heatmaps_per_class.keys())
-    num_classes = len(classes)
     num_layers = len(layers)
     
     # Denormalize image
@@ -99,24 +97,47 @@ def visualize_multi_class_comparison(image_data, heatmaps_per_class, bboxes, lay
     scale_x = 224.0 / original_w
     scale_y = 224.0 / original_h
     
-    # Create figure
-    fig, axes = plt.subplots(num_classes, num_layers + 1, 
-                            figsize=(2.5 * (num_layers + 1), 2.5 * num_classes))
+    # Create figure: 1 row x (1 + num_layers) columns
+    fig, axes = plt.subplots(1, num_layers + 1, 
+                            figsize=(2.5 * (num_layers + 1), 3.0))
     
-    # Handle single row case
-    if num_classes == 1:
-        axes = axes.reshape(1, -1)
+    # Column 0: Original image with GT boxes
+    axes[0].imshow(img)
+    prompt = f"an aerial photo of {query_class}"
+    title = f'{prompt}\nID: {image_data["image_id"]}'
+    axes[0].set_title(title, fontsize=8)
+    axes[0].axis('off')
     
-    # For each class
-    for row, query_class in enumerate(classes):
-        # Column 0: Original image with this class's GT boxes
-        axes[row, 0].imshow(img)
-        prompt = f"an aerial photo of {query_class}"
-        title = f'{prompt}\nID: {image_data["image_id"]}'
-        axes[row, 0].set_title(title, fontsize=7)
-        axes[row, 0].axis('off')
+    # Draw GT boxes: query class in green (thick), others in yellow (thin)
+    for bbox in bboxes:
+        xmin = bbox['xmin'] * scale_x
+        ymin = bbox['ymin'] * scale_y
+        xmax = bbox['xmax'] * scale_x
+        ymax = bbox['ymax'] * scale_y
+        w, h = xmax - xmin, ymax - ymin
         
-        # Draw GT boxes for this class in green, others in yellow
+        bbox_class = bbox.get('class', query_class)
+        if bbox_class == query_class:
+            color = 'lime'
+            linewidth = 3.0
+        else:
+            color = 'yellow'
+            linewidth = 1.2
+        
+        rect = patches.Rectangle((xmin, ymin), w, h, 
+                                linewidth=linewidth, edgecolor=color, facecolor='none')
+        axes[0].add_patch(rect)
+    
+    # Columns 1-N: Layer heatmaps
+    for col, layer_idx in enumerate(layers):
+        heatmap = heatmap_dict[layer_idx][0, 0].detach().cpu().numpy()
+        
+        axes[col + 1].imshow(img)
+        axes[col + 1].imshow(heatmap, cmap='jet', alpha=0.5)
+        axes[col + 1].set_title(f'L{layer_idx}', fontsize=9)
+        axes[col + 1].axis('off')
+        
+        # Draw GT boxes on heatmap
         for bbox in bboxes:
             xmin = bbox['xmin'] * scale_x
             ymin = bbox['ymin'] * scale_y
@@ -127,45 +148,14 @@ def visualize_multi_class_comparison(image_data, heatmaps_per_class, bboxes, lay
             bbox_class = bbox.get('class', query_class)
             if bbox_class == query_class:
                 color = 'lime'
-                linewidth = 2.5
+                linewidth = 3.0
             else:
                 color = 'yellow'
-                linewidth = 1.0
+                linewidth = 1.2
             
             rect = patches.Rectangle((xmin, ymin), w, h, 
                                     linewidth=linewidth, edgecolor=color, facecolor='none')
-            axes[row, 0].add_patch(rect)
-        
-        # Columns 1-12: Layer heatmaps
-        for col, layer_idx in enumerate(layers):
-            heatmap = heatmaps_per_class[query_class][layer_idx][0, 0].detach().cpu().numpy()
-            
-            axes[row, col + 1].imshow(img)
-            axes[row, col + 1].imshow(heatmap, cmap='jet', alpha=0.5)
-            
-            if row == 0:
-                axes[row, col + 1].set_title(f'L{layer_idx}', fontsize=8)
-            axes[row, col + 1].axis('off')
-            
-            # Draw GT boxes on heatmap
-            for bbox in bboxes:
-                xmin = bbox['xmin'] * scale_x
-                ymin = bbox['ymin'] * scale_y
-                xmax = bbox['xmax'] * scale_x
-                ymax = bbox['ymax'] * scale_y
-                w, h = xmax - xmin, ymax - ymin
-                
-                bbox_class = bbox.get('class', query_class)
-                if bbox_class == query_class:
-                    color = 'lime'
-                    linewidth = 2.5
-                else:
-                    color = 'yellow'
-                    linewidth = 1.0
-                
-                rect = patches.Rectangle((xmin, ymin), w, h, 
-                                        linewidth=linewidth, edgecolor=color, facecolor='none')
-                axes[row, col + 1].add_patch(rect)
+            axes[col + 1].add_patch(rect)
     
     plt.tight_layout(pad=0.5)
     plt.savefig(output_path, dpi=200, bbox_inches='tight')
@@ -247,14 +237,16 @@ def main():
             dior_classes, dior_prompts, config, args.layers
         )
         
-        # Visualize
-        output_path = output_dir / f'multi_class_{sample["image_id"]}.png'
-        visualize_multi_class_comparison(
-            image_data, heatmaps_per_class, sample['bboxes'], 
-            args.layers, output_path
-        )
+        # Visualize: generate one image per class
+        for query_class in unique_classes:
+            output_path = output_dir / f'{sample["image_id"]}_{query_class}.png'
+            visualize_single_class_heatmap(
+                image_data, query_class, heatmaps_per_class[query_class],
+                sample['bboxes'], args.layers, output_path
+            )
+            
+            print(f"  Saved: {output_path.name}")
         
-        print(f"Saved: {output_path.name}")
         processed += 1
     
     print(f"\n{'='*70}")
