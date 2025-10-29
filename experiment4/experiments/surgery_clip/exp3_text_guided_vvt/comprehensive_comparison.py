@@ -92,7 +92,7 @@ def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, config
     return heatmaps
 
 
-def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes_batch, layers, modes, output_dir):
+def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes_batch, image_ids, layers, modes, output_dir):
     """
     Visualize comprehensive comparison: modes x 12 layers
     
@@ -101,6 +101,7 @@ def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes
         images: [B, 3, H, W]
         class_names: list of str
         bboxes_batch: list of bbox dicts (with original_size info)
+        image_ids: list of image IDs
         layers: list of layer indices (should be 12)
         modes: list of mode names (should be 5)
         output_dir: Path
@@ -126,9 +127,10 @@ def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes
         
         # For each mode
         for row, mode_name in enumerate(modes):
-            # Column 0: original image + mode label
+            # Column 0: original image + mode label + image ID
             axes[row, 0].imshow(img)
-            axes[row, 0].set_title(f'{mode_name}\n{class_names[b]}', fontsize=8)
+            title_text = f'{mode_name}\n{class_names[b]}\nID: {image_ids[b]}'
+            axes[row, 0].set_title(title_text, fontsize=7)
             axes[row, 0].axis('off')
             
             # Draw GT bounding boxes (scaled to 224x224)
@@ -246,12 +248,14 @@ def main():
     all_images = []
     all_class_names = []
     all_bboxes = []
+    all_image_ids = []
     
     for idx, batch in enumerate(dataloader):
         if idx >= args.max_samples:
             break
         all_images.append(batch['image'])
         all_class_names.append(batch['class_name'][0])
+        all_image_ids.append(batch.get('image_id', [f'sample_{idx}'])[0])
         
         # Reformat bbox info with original size
         bbox_info = {
@@ -290,7 +294,7 @@ def main():
     print("\nGenerating comparison visualization...")
     output_dir = Path(__file__).parent / 'comprehensive_comparison_results'
     visualize_comprehensive_comparison(
-        all_heatmaps, images, all_class_names, all_bboxes,
+        all_heatmaps, images, all_class_names, all_bboxes, all_image_ids,
         all_layers, list(mode_configs.keys()), output_dir
     )
     
