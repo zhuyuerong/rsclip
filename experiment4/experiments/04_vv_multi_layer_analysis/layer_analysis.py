@@ -138,20 +138,20 @@ def analyze_layer_features(model, dataloader, config, layers=[1, 6, 9, 12], max_
                 # 方法1: 标准余弦相似度
                 sim_cosine = compute_cosine_similarity(patch_features, text_features)  # [1, N, 1]
                 heatmap_cosine = generate_heatmap_from_similarity(sim_cosine, config.image_size)
-                results[layer_idx]['cosine'].append(heatmap_cosine[0, 0].cpu().numpy())
+                results[layer_idx]['cosine'].append(heatmap_cosine[0, 0].detach().cpu().numpy())
                 
                 # 方法2: Feature Surgery相似度
                 if config.use_surgery:
                     sim_surgery = clip_feature_surgery(features, text_features, t=2)  # [1, N, 1]
                     heatmap_surgery = generate_heatmap_from_similarity(sim_surgery, config.image_size)
-                    results[layer_idx]['surgery'].append(heatmap_surgery[0, 0].cpu().numpy())
+                    results[layer_idx]['surgery'].append(heatmap_surgery[0, 0].detach().cpu().numpy())
                 
                 # 方法3: VV^T patch自相似度（可视化patch关系）
                 sim_vvt = compute_vvt_similarity(patch_features)  # [1, N, N]
                 # 取平均值作为每个patch的"重要性"
                 vvt_importance = sim_vvt.mean(dim=-1, keepdim=True)  # [1, N, 1]
                 heatmap_vvt = generate_heatmap_from_similarity(vvt_importance, config.image_size)
-                results[layer_idx]['vvt'].append(heatmap_vvt[0, 0].cpu().numpy())
+                results[layer_idx]['vvt'].append(heatmap_vvt[0, 0].detach().cpu().numpy())
             
             sample_count += 1
     

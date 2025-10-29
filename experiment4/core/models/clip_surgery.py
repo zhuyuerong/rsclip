@@ -25,20 +25,25 @@ def clip_feature_surgery(image_features, text_features, redundant_feats=None, t=
         t: 温度参数（默认2）
     
     Returns:
-        similarity: [B, N_patches, N_classes] 去冗余后的相似度
+        similarity: [B, N_patches, N_classes] 去冗余后的相似度（不含CLS token）
     """
     if redundant_feats is not None:
         # 使用预计算的冗余特征
-        similarity = image_features @ (text_features - redundant_feats).t()
+        # 只使用patch特征，不含CLS
+        patch_features = image_features[:, 1:, :]  # [B, N_patches, C]
+        similarity = patch_features @ (text_features - redundant_feats).t()
     else:
-        # 计算类别权重（抑制明显类别影响）
+        # 计算类别权重（使用CLS token）
         prob = image_features[:, :1, :] @ text_features.t()  # [B, 1, N_classes]
         prob = (prob * t).softmax(-1)  # 温度=t
         w = prob / prob.mean(-1, keepdim=True)  # 归一化权重
         
+        # 只使用patch特征进行后续计算
+        patch_features = image_features[:, 1:, :]  # [B, N_patches, C]
+        
         # 类别-位置特异性特征（逐元素相乘）
-        b, n_t, n_i, c = image_features.shape[0], text_features.shape[0], image_features.shape[1], image_features.shape[2]
-        feats = image_features.reshape(b, n_i, 1, c) * text_features.reshape(1, 1, n_t, c)
+        b, n_t, n_i, c = patch_features.shape[0], text_features.shape[0], patch_features.shape[1], patch_features.shape[2]
+        feats = patch_features.reshape(b, n_i, 1, c) * text_features.reshape(1, 1, n_t, c)
         # [B, N_patches, 1, C] × [1, 1, N_classes, C] → [B, N_patches, N_classes, C]
         
         # 应用类别权重
@@ -59,13 +64,27 @@ def get_similarity_map(similarity, original_shape):
     将相似度转换为热图
     
     Args:
-        similarity: [B, N_patches, N_classes] 相似度分数
+        similarity: [B, N_tokens, N_classes] 相似度分数（N_tokens可能包含CLS token）
         original_shape: (H, W) 原图尺寸
     
     Returns:
         heatmaps: [B, N_classes, H, W] 热图
     """
-    B, N_patches, N_classes = similarity.shape
+    B, N_tokens, N_classes = similarity.shape
+    
+    # 如果包含CLS token（N_tokens = N_patches + 1），去掉CLS
+    # 判断依据：√N_tokens是否为整数
+    sqrt_n = int(N_tokens ** 0.5)
+    if sqrt_n * sqrt_n != N_tokens:
+        # N_tokens不是完全平方数，可能包含CLS token
+        # 尝试去掉第一个token (CLS)
+        if int((N_tokens - 1) ** 0.5) ** 2 == N_tokens - 1:
+            # 去掉CLS后是完全平方数，说明第一个是CLS
+            # 但similarity是[B, N_tokens, K]，CLS已经在clip_feature_surgery中被使用
+            # 这里我们假设similarity已经是纯patch的（不含CLS）
+            pass
+    
+    N_patches = N_tokens  # 假设已经是patch数量
     
     # Min-Max归一化到[0, 1]
     sm = (similarity - similarity.min(1, keepdim=True)[0]) / \
@@ -73,8 +92,11 @@ def get_similarity_map(similarity, original_shape):
     
     # Reshape为空间特征图
     side = int(N_patches ** 0.5)
-    sm = sm.reshape(B, side, side, N_classes)  # [B, 14, 14, N_classes]
-    sm = sm.permute(0, 3, 1, 2)  # [B, N_classes, 14, 14]
+    if side * side != N_patches:
+        raise ValueError(f"N_patches={N_patches}不是完全平方数，无法reshape为正方形网格")
+    
+    sm = sm.reshape(B, side, side, N_classes)  # [B, side, side, N_classes]
+    sm = sm.permute(0, 3, 1, 2)  # [B, N_classes, side, side]
     
     # 上采样到原图尺寸
     heatmaps = F.interpolate(sm, size=original_shape, mode='bilinear', align_corners=False)
