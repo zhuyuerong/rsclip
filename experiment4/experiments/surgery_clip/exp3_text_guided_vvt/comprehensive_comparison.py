@@ -37,15 +37,16 @@ from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper, clip_featur
 from utils.seen_unseen_split import SeenUnseenDataset
 
 
-def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, config, layers, mode_name):
+def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, dior_classes_raw, config, layers, mode_name):
     """
     为指定模式生成所有层的热图
     
     Args:
         model: CLIPSurgeryWrapper
         images: [B, 3, H, W]
-        text_queries: list of str
-        dior_classes: list of 20 classes
+        text_queries: list of str (raw class names)
+        dior_classes: list of 20 classes with prompt ("an aerial photo of ...")
+        dior_classes_raw: list of 20 raw class names
         config: Config
         layers: list of layer indices
         mode_name: str (模式名称)
@@ -58,7 +59,7 @@ def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, config
     # 提取多层特征
     layer_features_dict = model.get_layer_features(images, layer_indices=layers)
     
-    # 编码所有类别文本
+    # 编码所有类别文本（使用prompt格式）
     all_text_features = model.encode_text(dior_classes)
     all_text_features = F.normalize(all_text_features, dim=-1)
     
@@ -66,7 +67,8 @@ def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, config
     
     # 逐样本处理
     for b in range(B):
-        target_class_idx = dior_classes.index(text_queries[b])
+        # 在raw class names中找到目标类别索引
+        target_class_idx = dior_classes_raw.index(text_queries[b])
         
         for layer_idx in layers:
             image_feature = layer_features_dict[layer_idx][b:b+1]
@@ -129,19 +131,28 @@ def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes
         for row, mode_name in enumerate(modes):
             # Column 0: original image + mode label + image ID
             axes[row, 0].imshow(img)
-            title_text = f'{mode_name}\n{class_names[b]}\nID: {image_ids[b]}'
-            axes[row, 0].set_title(title_text, fontsize=7)
+            # Show the CLIP prompt in title
+            prompt_text = f"an aerial photo of {class_names[b]}"
+            title_text = f'{mode_name}\n{prompt_text}\nID: {image_ids[b]}'
+            axes[row, 0].set_title(title_text, fontsize=6.5)
             axes[row, 0].axis('off')
             
-            # Draw GT bounding boxes (scaled to 224x224)
+            # Draw GT bounding boxes (only for matching class)
             if b < len(bboxes_batch):
                 bbox_info = bboxes_batch[b]
+                target_class = class_names[b]  # Current sample's class
+                
                 if 'boxes' in bbox_info and len(bbox_info['boxes']) > 0:
                     original_h, original_w = bbox_info.get('original_size', (224, 224))
                     scale_x = 224.0 / original_w
                     scale_y = 224.0 / original_h
                     
                     for bbox in bbox_info['boxes']:
+                        # Only draw bbox if class matches the text query
+                        bbox_class = bbox.get('class', target_class)
+                        if bbox_class != target_class:
+                            continue
+                        
                         # Scale bbox to 224x224
                         xmin = bbox['xmin'] * scale_x
                         ymin = bbox['ymin'] * scale_y
@@ -167,15 +178,22 @@ def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes
                     axes[row, col + 1].set_title(f'L{layer_idx}', fontsize=8)
                 axes[row, col + 1].axis('off')
                 
-                # Draw GT boxes on heatmap
+                # Draw GT boxes on heatmap (only for matching class)
                 if b < len(bboxes_batch):
                     bbox_info = bboxes_batch[b]
+                    target_class = class_names[b]
+                    
                     if 'boxes' in bbox_info and len(bbox_info['boxes']) > 0:
                         original_h, original_w = bbox_info.get('original_size', (224, 224))
                         scale_x = 224.0 / original_w
                         scale_y = 224.0 / original_h
                         
                         for bbox in bbox_info['boxes']:
+                            # Only draw bbox if class matches
+                            bbox_class = bbox.get('class', target_class)
+                            if bbox_class != target_class:
+                                continue
+                            
                             xmin = bbox['xmin'] * scale_x
                             ymin = bbox['ymin'] * scale_y
                             xmax = bbox['xmax'] * scale_x
@@ -202,12 +220,15 @@ def main():
     
     args = parser.parse_args()
     
-    # DIOR所有类别
-    dior_class_names = ['airplane', 'airport', 'baseballfield', 'basketballcourt', 
-                       'bridge', 'chimney', 'dam', 'Expressway-Service-area',
-                       'Expressway-toll-station', 'golffield', 'groundtrackfield',
-                       'harbor', 'overpass', 'ship', 'stadium', 'storagetank',
-                       'tenniscourt', 'trainstation', 'vehicle', 'windmill']
+    # DIOR所有类别（使用CLIP标准prompt格式）
+    dior_class_names_raw = ['airplane', 'airport', 'baseballfield', 'basketballcourt', 
+                           'bridge', 'chimney', 'dam', 'Expressway-Service-area',
+                           'Expressway-toll-station', 'golffield', 'groundtrackfield',
+                           'harbor', 'overpass', 'ship', 'stadium', 'storagetank',
+                           'tenniscourt', 'trainstation', 'vehicle', 'windmill']
+    
+    # 转换为CLIP prompt格式: "an aerial photo of {class}"
+    dior_class_names = [f"an aerial photo of {cls}" for cls in dior_class_names_raw]
     
     # 12层
     all_layers = list(range(1, 13))
@@ -283,7 +304,7 @@ def main():
         
         # Generate heatmaps
         heatmaps = generate_heatmaps_for_mode(
-            model, images, all_class_names, dior_class_names, 
+            model, images, all_class_names, dior_class_names, dior_class_names_raw,
             config, all_layers, mode_name
         )
         
