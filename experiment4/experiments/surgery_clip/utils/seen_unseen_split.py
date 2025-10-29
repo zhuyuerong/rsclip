@@ -186,6 +186,8 @@ class SeenUnseenDataset(Dataset):
         
         # 加载图像
         image = Image.open(sample['image_path']).convert('RGB')
+        original_size = image.size  # (W, H)
+        
         if self.transform:
             image = self.transform(image)
         
@@ -194,7 +196,8 @@ class SeenUnseenDataset(Dataset):
             'image_id': sample['image_id'],
             'class_name': sample['classes'][0] if sample['classes'] else 'unknown',  # 取第一个类别
             'classes': sample['classes'],
-            'bboxes': sample['bboxes']
+            'bboxes': sample['bboxes'],
+            'original_size': (original_size[1], original_size[0])  # Convert to (H, W)
         }
 
 

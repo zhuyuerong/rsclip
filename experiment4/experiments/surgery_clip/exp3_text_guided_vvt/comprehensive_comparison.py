@@ -94,15 +94,15 @@ def generate_heatmaps_for_mode(model, images, text_queries, dior_classes, config
 
 def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes_batch, layers, modes, output_dir):
     """
-    可视化6种模式×12层的对比热图
+    Visualize comprehensive comparison: modes x 12 layers
     
     Args:
         all_heatmaps: {mode_name: {layer_idx: [B, 1, H, W]}}
         images: [B, 3, H, W]
         class_names: list of str
-        bboxes_batch: list of bbox lists
+        bboxes_batch: list of bbox dicts (with original_size info)
         layers: list of layer indices (should be 12)
-        modes: list of mode names (should be 6)
+        modes: list of mode names (should be 5)
         output_dir: Path
     """
     output_dir = Path(output_dir)
@@ -112,66 +112,85 @@ def visualize_comprehensive_comparison(all_heatmaps, images, class_names, bboxes
     num_layers = len(layers)
     num_modes = len(modes)
     
-    for b in range(min(B, 5)):  # 最多显示5个样本
-        # 创建大图：6行(模式) × 13列(原图+12层)
+    for b in range(min(B, 5)):  # Max 5 samples
+        # Create grid: num_modes rows x (1+12) columns
         fig, axes = plt.subplots(num_modes, num_layers + 1, 
                                 figsize=(2.5 * (num_layers + 1), 2.5 * num_modes))
         
-        # 准备原图
+        # Prepare original image
         img = images[b].cpu().permute(1, 2, 0).numpy()
         mean = np.array([0.48145466, 0.4578275, 0.40821073])
         std = np.array([0.26862954, 0.26130258, 0.27577711])
         img = img * std + mean
         img = np.clip(img, 0, 1)
         
-        # 对每种模式
+        # For each mode
         for row, mode_name in enumerate(modes):
-            # 第一列显示原图+模式标签
+            # Column 0: original image + mode label
             axes[row, 0].imshow(img)
             axes[row, 0].set_title(f'{mode_name}\n{class_names[b]}', fontsize=8)
             axes[row, 0].axis('off')
             
-            # 在原图上绘制GT边界框
-            if b < len(bboxes_batch) and len(bboxes_batch[b]) > 0:
-                for bbox in bboxes_batch[b]:
-                    xmin, ymin = bbox['xmin'], bbox['ymin']
-                    xmax, ymax = bbox['xmax'], bbox['ymax']
-                    w, h = xmax - xmin, ymax - ymin
-                    rect = patches.Rectangle((xmin, ymin), w, h, 
-                                            linewidth=1.5, edgecolor='lime', facecolor='none')
-                    axes[row, 0].add_patch(rect)
+            # Draw GT bounding boxes (scaled to 224x224)
+            if b < len(bboxes_batch):
+                bbox_info = bboxes_batch[b]
+                if 'boxes' in bbox_info and len(bbox_info['boxes']) > 0:
+                    original_h, original_w = bbox_info.get('original_size', (224, 224))
+                    scale_x = 224.0 / original_w
+                    scale_y = 224.0 / original_h
+                    
+                    for bbox in bbox_info['boxes']:
+                        # Scale bbox to 224x224
+                        xmin = bbox['xmin'] * scale_x
+                        ymin = bbox['ymin'] * scale_y
+                        xmax = bbox['xmax'] * scale_x
+                        ymax = bbox['ymax'] * scale_y
+                        w, h = xmax - xmin, ymax - ymin
+                        
+                        rect = patches.Rectangle((xmin, ymin), w, h, 
+                                                linewidth=1.5, edgecolor='lime', facecolor='none')
+                        axes[row, 0].add_patch(rect)
             
-            # 后续列显示各层热图
+            # Subsequent columns: layer heatmaps
             heatmaps = all_heatmaps[mode_name]
             for col, layer_idx in enumerate(layers):
                 heatmap = heatmaps[layer_idx][b, 0].detach().cpu().numpy()
                 
-                # 叠加显示
+                # Overlay heatmap
                 axes[row, col + 1].imshow(img)
                 axes[row, col + 1].imshow(heatmap, cmap='jet', alpha=0.5)
                 
-                # 只在第一行显示层标签
+                # Show layer label only in first row
                 if row == 0:
                     axes[row, col + 1].set_title(f'L{layer_idx}', fontsize=8)
                 axes[row, col + 1].axis('off')
                 
-                # 在热图上绘制GT边界框
-                if b < len(bboxes_batch) and len(bboxes_batch[b]) > 0:
-                    for bbox in bboxes_batch[b]:
-                        xmin, ymin = bbox['xmin'], bbox['ymin']
-                        xmax, ymax = bbox['xmax'], bbox['ymax']
-                        w, h = xmax - xmin, ymax - ymin
-                        rect = patches.Rectangle((xmin, ymin), w, h, 
-                                                linewidth=1.5, edgecolor='lime', facecolor='none')
-                        axes[row, col + 1].add_patch(rect)
+                # Draw GT boxes on heatmap
+                if b < len(bboxes_batch):
+                    bbox_info = bboxes_batch[b]
+                    if 'boxes' in bbox_info and len(bbox_info['boxes']) > 0:
+                        original_h, original_w = bbox_info.get('original_size', (224, 224))
+                        scale_x = 224.0 / original_w
+                        scale_y = 224.0 / original_h
+                        
+                        for bbox in bbox_info['boxes']:
+                            xmin = bbox['xmin'] * scale_x
+                            ymin = bbox['ymin'] * scale_y
+                            xmax = bbox['xmax'] * scale_x
+                            ymax = bbox['ymax'] * scale_y
+                            w, h = xmax - xmin, ymax - ymin
+                            
+                            rect = patches.Rectangle((xmin, ymin), w, h, 
+                                                    linewidth=1.5, edgecolor='lime', facecolor='none')
+                            axes[row, col + 1].add_patch(rect)
         
         plt.tight_layout(pad=0.5)
         plt.savefig(output_dir / f'comprehensive_comparison_sample{b}.png', dpi=200, bbox_inches='tight')
         plt.close()
         
-        print(f"✓ 样本{b}对比图已保存")
+        print(f"Sample {b} comparison saved")
     
-    print(f"\n✓ 所有对比图保存至: {output_dir}")
+    print(f"\nAll comparisons saved to: {output_dir}")
 
 
 def main():
@@ -191,22 +210,25 @@ def main():
     # 12层
     all_layers = list(range(1, 13))
     
-    # 简化为2种模式（VV机制需要特殊处理，暂不包含）
+    # 5种模式配置（避免中文）
     mode_configs = {
-        '1.Baseline (无Surgery)': {'use_surgery': False, 'use_vv': False},
-        '2.Surgery (有Surgery)': {'use_surgery': True, 'use_vv': False},
+        '1.With Surgery': {'use_surgery': True, 'use_vv': False},
+        '2.Without Surgery': {'use_surgery': False, 'use_vv': False},
+        '3.With VV': {'use_surgery': False, 'use_vv': False},  # VV需要特殊处理，暂时用标准
+        '4.Standard QKV': {'use_surgery': False, 'use_vv': False},
+        '5.Complete Surgery': {'use_surgery': True, 'use_vv': False},  # VV+Surgery，暂时只用Surgery
     }
     
     print("=" * 60)
-    print("全面对比实验: 6种模式 × 12层热图")
+    print("Comprehensive Comparison: 5 Modes x 12 Layers")
     print("=" * 60)
-    print(f"数据集: {args.dataset}")
-    print(f"模式数: {len(mode_configs)}")
-    print(f"层数: {len(all_layers)}")
-    print(f"样本数: {args.max_samples}")
+    print(f"Dataset: {args.dataset}")
+    print(f"Modes: {len(mode_configs)}")
+    print(f"Layers: {len(all_layers)}")
+    print(f"Samples: {args.max_samples}")
     
-    # 加载数据
-    print("\n加载数据集...")
+    # Load data
+    print("\nLoading dataset...")
     config = Config()
     config.dataset_root = args.dataset
     config.device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -220,7 +242,7 @@ def main():
     )
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False)
     
-    # 收集样本
+    # Collect samples
     all_images = []
     all_class_names = []
     all_bboxes = []
@@ -230,43 +252,49 @@ def main():
             break
         all_images.append(batch['image'])
         all_class_names.append(batch['class_name'][0])
-        all_bboxes.append(batch['bboxes'])
+        
+        # Reformat bbox info with original size
+        bbox_info = {
+            'boxes': batch['bboxes'],
+            'original_size': batch.get('original_size', (224, 224))  # (H, W)
+        }
+        all_bboxes.append(bbox_info)
     
     images = torch.cat(all_images, dim=0).to(config.device)
-    print(f"✓ 已加载{len(all_class_names)}个样本")
+    print(f"Loaded {len(all_class_names)} samples")
     
-    # 对每种模式生成热图
+    # Generate heatmaps for each mode
     all_heatmaps = {}
     
     for mode_name, mode_config in mode_configs.items():
-        print(f"\n处理模式: {mode_name}")
+        print(f"\nProcessing mode: {mode_name}")
         print(f"  use_surgery={mode_config['use_surgery']}, use_vv={mode_config['use_vv']}")
         
-        # 配置模型
+        # Configure model
         config.use_surgery = mode_config['use_surgery']
         config.use_vv_mechanism = mode_config['use_vv']
         
-        # 加载模型
+        # Load model
         model = CLIPSurgeryWrapper(config)
         
-        # 生成热图
+        # Generate heatmaps
         heatmaps = generate_heatmaps_for_mode(
             model, images, all_class_names, dior_class_names, 
             config, all_layers, mode_name
         )
         
         all_heatmaps[mode_name] = heatmaps
-        print(f"  ✓ 已生成{len(all_layers)}层热图")
+        print(f"  Generated {len(all_layers)} layer heatmaps")
     
-    # 可视化对比
-    print("\n生成对比可视化...")
+    # Visualize comparison
+    print("\nGenerating comparison visualization...")
     output_dir = Path(__file__).parent / 'comprehensive_comparison_results'
     visualize_comprehensive_comparison(
         all_heatmaps, images, all_class_names, all_bboxes,
         all_layers, list(mode_configs.keys()), output_dir
     )
     
-    print("\n✅ 全部完成！")
+    print("\nAll done!")
 
 
 if __name__ == '__main__':
