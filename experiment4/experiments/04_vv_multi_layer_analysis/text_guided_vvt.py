@@ -111,7 +111,7 @@ def visualize_multi_layer_heatmaps(heatmaps, images, class_names, layers, output
         
         # 显示各层热图
         for i, layer_idx in enumerate(layers):
-            heatmap = heatmaps[layer_idx][b, 0].cpu().numpy()  # 取第一个类别
+            heatmap = heatmaps[layer_idx][b, 0].detach().cpu().numpy()  # 取第一个类别
             
             # 叠加显示
             axes[i+1].imshow(img)
@@ -149,7 +149,7 @@ def analyze_gt_response_by_layer(heatmaps, bboxes_batch, layers, image_size=224)
             if b >= heatmap_tensor.shape[0]:
                 break
             
-            heatmap = heatmap_tensor[b, 0].cpu().numpy()  # [H, W]
+            heatmap = heatmap_tensor[b, 0].detach().cpu().numpy()  # [H, W]
             
             for bbox in bboxes:
                 xmin, ymin, xmax, ymax = bbox['xmin'], bbox['ymin'], bbox['xmax'], bbox['ymax']
@@ -242,9 +242,9 @@ def main():
         print(f"  Layer {layer_idx}: {gt_responses[layer_idx]:.4f}")
     print("-" * 40)
     
-    # 保存结果
+    # 保存结果（转换float16为float）
     with open(output_dir / 'gt_responses.json', 'w', encoding='utf-8') as f:
-        json.dump({f'layer_{k}': v for k, v in gt_responses.items()}, f, indent=4)
+        json.dump({f'layer_{k}': float(v) for k, v in gt_responses.items()}, f, indent=4)
     
     print(f"\n✓ 分析完成！结果保存至: {output_dir}")
 
