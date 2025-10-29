@@ -1,0 +1,22 @@
+{
+    "layer_1": {
+        "cosine_mean": 0.4736328125,
+        "cosine_std": 0.166259765625,
+        "num_samples": 10
+    },
+    "layer_6": {
+        "cosine_mean": 0.477294921875,
+        "cosine_std": 0.16796875,
+        "num_samples": 10
+    },
+    "layer_9": {
+        "cosine_mean": 0.529296875,
+        "cosine_std": 0.192626953125,
+        "num_samples": 10
+    },
+    "layer_12": {
+        "cosine_mean": 0.5791015625,
+        "cosine_std": 0.1673583984375,
+        "num_samples": 10
+    }
+}

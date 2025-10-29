@@ -1,0 +1,54 @@
+surgery_clip/ - Surgery CLIP完整实验
+=====================================
+
+共享模块:
+---------
+config_experiments.py    # 3种模式配置管理
+utils/seen_unseen_split.py  # Seen/Unseen数据集划分
+quick_test_all.py        # 快速功能测试
+run_all_experiments.sh   # 自动化运行所有实验
+
+独立实验 (每个都有独立代码+结果):
+-----------------------------------
+
+exp1_patch_similarity/
+├── patch_similarity_matrix.py   # 实验代码
+├── surgery_comparison_layer12.png (83KB)  # 结果
+└── README.txt                   # 说明
+
+exp2_layer_analysis/
+├── layer_analysis.py            # 实验代码
+├── layer_comparison_heatmaps.png (609KB)  # 结果
+├── layer_statistics.json (501B)  # 结果
+└── README.txt                   # 说明
+
+exp3_text_guided_vvt/
+├── text_guided_vvt.py           # 实验代码
+├── text_guided_vvt_sample0-4.png (5个, 2.2MB)  # 结果
+├── gt_responses.json (82B)      # 结果
+└── README.txt                   # 说明
+
+exp4_mode_comparison/
+├── compare_three_modes.py       # 实验代码
+└── README.txt                   # 说明 (待运行)
+
+依赖关系:
+---------
+所有实验依赖:
+- experiment4/core/models/clip_surgery.py
+  - CLIPSurgeryWrapper (第459-629行)
+  - clip_feature_surgery (第15-59行)
+  - get_similarity_map (第62-100行)
+  - VVAttention, CLIPSurgery (第29-456行)
+
+运行方式:
+---------
+1. 单独运行: cd exp*/ && python *.py --dataset ...
+2. 批量运行: bash run_all_experiments.sh
+3. 快速测试: python quick_test_all.py
+
+总计:
+-----
+- 4个独立实验
+- 9个结果文件 (2.9MB)
+- 每个实验自包含代码和结果
