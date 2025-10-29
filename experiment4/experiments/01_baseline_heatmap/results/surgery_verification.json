@@ -1,0 +1,81 @@
+{
+  "surgery_execution_check": {
+    "surgery_applied_in_wrapper": false,
+    "statistics": {
+      "patch_raw_mean": -0.0030460357666015625,
+      "patch_raw_std": 0.3369140625,
+      "patch_manual_surgery_mean": 4.0531158447265625e-06,
+      "patch_manual_surgery_std": 0.214599609375,
+      "patch_wrapper_mean": -0.0030460357666015625,
+      "patch_wrapper_std": 0.3369140625,
+      "diff_raw_vs_wrapper": 0.0,
+      "diff_manual_vs_wrapper": 0.1348876953125
+    }
+  },
+  "mAP_comparison": [
+    {
+      "method": "原始阈值30%",
+      "apply_surgery": false,
+      "use_inverted": false,
+      "threshold": 30,
+      "mAP_005": 0.3818181785090909,
+      "mAP_050": 0.16666666500000002,
+      "per_class": {
+        "Expressway-toll-station": 0.0,
+        "airplane": 0.0,
+        "stadium": 0.9999999900000002,
+        "storagetank": 0.0,
+        "tenniscourt": 0.0,
+        "trainstation": 0.0
+      }
+    },
+    {
+      "method": "Surgery+阈值30%",
+      "apply_surgery": true,
+      "use_inverted": false,
+      "threshold": 30,
+      "mAP_005": 0.30909090682121215,
+      "mAP_050": 0.16666666500000002,
+      "per_class": {
+        "Expressway-toll-station": 0.0,
+        "airplane": 0.0,
+        "stadium": 0.9999999900000002,
+        "storagetank": 0.0,
+        "tenniscourt": 0.0,
+        "trainstation": 0.0
+      }
+    },
+    {
+      "method": "Surgery+反转+阈值30%",
+      "apply_surgery": true,
+      "use_inverted": true,
+      "threshold": 30,
+      "mAP_005": 0.4999999961111112,
+      "mAP_050": 0.16666666500000002,
+      "per_class": {
+        "Expressway-toll-station": 0.0,
+        "airplane": 0.0,
+        "stadium": 0.9999999900000002,
+        "storagetank": 0.0,
+        "tenniscourt": 0.0,
+        "trainstation": 0.0
+      }
+    },
+    {
+      "method": "原始反转+阈值30%",
+      "apply_surgery": false,
+      "use_inverted": true,
+      "threshold": 30,
+      "mAP_005": 0.4166666640277778,
+      "mAP_050": 0.08333333291666666,
+      "per_class": {
+        "Expressway-toll-station": 0.0,
+        "airplane": 0.0,
+        "stadium": 0.4999999974999999,
+        "storagetank": 0.0,
+        "tenniscourt": 0.0,
+        "trainstation": 0.0
+      }
+    }
+  ]
+}
