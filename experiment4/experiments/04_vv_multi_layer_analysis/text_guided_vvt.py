@@ -36,35 +36,43 @@ def generate_text_guided_vvt_heatmaps(model, images, text_queries, config, layer
     Args:
         model: CLIPSurgeryWrapper
         images: [B, 3, H, W]
-        text_queries: list of str
+        text_queries: list of str（每个图像对应一个文本查询）
         config: Config对象
         layers: 要分析的层
     
     Returns:
-        heatmaps: {layer_idx: [B, N_classes, H, W]}
+        heatmaps: {layer_idx: [B, 1, H, W]}（每个样本一个热图）
     """
-    # 提取多层特征
+    B = images.shape[0]
+    
+    # 提取多层特征（一次性）
     layer_features_dict = model.get_layer_features(images, layer_indices=layers)
     
-    # 提取文本特征
-    text_features = model.encode_text(text_queries)  # [N_classes, C]
-    text_features = F.normalize(text_features, dim=-1)
+    heatmaps = {layer_idx: [] for layer_idx in layers}
     
-    heatmaps = {}
+    # 逐样本处理（因为每个样本对应不同的文本）
+    for b in range(B):
+        # 提取单个样本的文本特征
+        text_feature = model.encode_text([text_queries[b]])  # [1, C]
+        text_feature = F.normalize(text_feature, dim=-1)
+        
+        for layer_idx in layers:
+            # 获取该层该样本的特征
+            image_feature = layer_features_dict[layer_idx][b:b+1]  # [1, N+1, C]
+            
+            # 使用Feature Surgery计算相似度
+            similarity = clip_feature_surgery(image_feature, text_feature, t=2)
+            # [1, N_patches, 1]
+            
+            # 生成热图（归一化 + reshape + 上采样）
+            heatmap = get_similarity_map(similarity, (config.image_size, config.image_size))
+            # [1, 1, H, W]
+            
+            heatmaps[layer_idx].append(heatmap)
     
+    # 合并所有样本
     for layer_idx in layers:
-        # 获取该层特征
-        image_features = layer_features_dict[layer_idx]  # [B, N+1, C]
-        
-        # 使用Feature Surgery计算相似度
-        similarity = clip_feature_surgery(image_features, text_features, t=2)
-        # [B, N_patches, N_classes]
-        
-        # 生成热图（归一化 + reshape + 上采样）
-        heatmap = get_similarity_map(similarity, (config.image_size, config.image_size))
-        # [B, N_classes, H, W]
-        
-        heatmaps[layer_idx] = heatmap
+        heatmaps[layer_idx] = torch.cat(heatmaps[layer_idx], dim=0)  # [B, 1, H, W]
     
     return heatmaps
 
