@@ -1,0 +1,127 @@
+Experiment 3: Text-Guided VV^T Heatmaps - COMPLETE
+===================================================
+
+GENERATED FILES (17 files, 96.8MB)
+==================================
+
+1. GT Box Debug Visualizations (5 files, 2.2MB)
+   - debug_sample0_DIOR_03135.png (326KB) - Expressway-toll-station, 2 boxes
+   - debug_sample1_DIOR_05386.png (403KB) - overpass, 4 boxes
+   - debug_sample2_DIOR_08859.png (270KB) - dam, 1 box
+   - debug_sample3_DIOR_09041.png (643KB) - windmill, 11 boxes
+   - debug_sample4_DIOR_09115.png (599KB) - windmill, 10 boxes
+   
+   Format: Left (image+GT), Right (coordinate info text)
+
+2. 4-Layer Heatmaps with GT Boxes (5 files, 9.1MB)
+   - text_guided_vvt_sample0-4.png
+   - Layout: 1 row x 5 columns (Original + L1,L3,L6,L9)
+   - With green GT bounding boxes
+
+3. 5-Mode x 12-Layer Comprehensive Comparison (5 files, 70.5MB)
+   - comprehensive_comparison_sample0-4.png
+   - Layout: 5 rows x 13 columns
+   - Rows (5 modes):
+     * Row 1: With Surgery
+     * Row 2: Without Surgery
+     * Row 3: With VV (currently standard)
+     * Row 4: Standard QKV
+     * Row 5: Complete Surgery (currently Surgery only)
+   - Columns: Original + L1-L12
+   - Each shows: Image ID + Class + Mode
+
+4. Metadata (2 files, <1KB)
+   - gt_responses.json (139B) - GT region responses by layer
+   - (debug coordinate info embedded in images)
+
+CODE FILES (3 scripts)
+======================
+- text_guided_vvt.py (293 lines)
+  - Generate 4-layer heatmaps with GT boxes
+  
+- comprehensive_comparison.py (306 lines)
+  - Generate 5-mode x 12-layer comparison
+  - Mode switching logic
+  
+- debug_gt_boxes.py (147 lines)
+  - GT box position verification
+  - Coordinate information display
+
+COORDINATE SYSTEM
+=================
+Original Images: 800x800 pixels
+Display Images: 224x224 pixels
+Scale Factor: 0.28 (224/800)
+
+Bbox Scaling:
+  xmin_scaled = xmin_original * 0.28
+  ymin_scaled = ymin_original * 0.28
+  xmax_scaled = xmax_original * 0.28
+  ymax_scaled = ymax_original * 0.28
+
+Example (DIOR_03135):
+  Original: (368,328) -> (488,427)  [120x99]
+  Scaled:   (103,92)  -> (137,120)  [34x28]
+
+SAMPLE INFORMATION
+==================
+Sample 0: DIOR_03135, Expressway-toll-station, 2 boxes
+Sample 1: DIOR_05386, overpass, 4 boxes
+Sample 2: DIOR_08859, dam, 1 box
+Sample 3: DIOR_09041, windmill, 11 boxes (tiny: 13x21 -> 3.6x5.9)
+Sample 4: DIOR_09115, windmill, 10 boxes (tiny: 6x15 -> 1.7x4.2)
+
+VISUALIZATION DETAILS
+=====================
+GT Box Color: Lime green (#00FF00)
+GT Box Width: 2 pixels (debug), 1.5 pixels (comparison)
+Heatmap Colormap: jet (blue->green->yellow->red)
+Heatmap Alpha: 0.5
+Resolution: 200 DPI (comparison), 150 DPI (debug)
+Image Format: PNG with tight bbox
+
+RUNNING COMMANDS
+================
+
+# Debug GT boxes
+PYTHONPATH=. ovadetr_env/bin/python3.9 \
+  experiment4/experiments/surgery_clip/exp3_text_guided_vvt/debug_gt_boxes.py \
+  --dataset datasets/mini_dataset --num-samples 5
+
+# 4-layer heatmaps
+PYTHONPATH=. ovadetr_env/bin/python3.9 \
+  experiment4/experiments/surgery_clip/exp3_text_guided_vvt/text_guided_vvt.py \
+  --dataset datasets/mini_dataset --layers 1 3 6 9 --max-samples 5
+
+# 5x13 comprehensive comparison
+PYTHONPATH=. ovadetr_env/bin/python3.9 \
+  experiment4/experiments/surgery_clip/exp3_text_guided_vvt/comprehensive_comparison.py \
+  --dataset datasets/mini_dataset --max-samples 5
+
+VERIFICATION CHECKLIST
+======================
+To verify GT box positions:
+1. Open: gt_box_debug/debug_sample*_DIOR_*.png
+2. Check: Green boxes align with target objects
+3. Read: Right panel for exact coordinates
+4. Compare: Original (800x800) vs Scaled (224x224)
+
+If boxes are still incorrect:
+- Specify which sample (0-4)
+- Specify which box number
+- Describe the issue (offset direction/distance)
+
+GIT COMMITS
+===========
+- 3f4fb418: Add GT box debug visualizer + Image ID display
+- 8f65894d: Add final summary
+- 4dc10d4b: Fix GT box position + 5 modes
+- 0ae23807: Add comprehensive comparison README
+
+STATUS: COMPLETE
+================
+- All 5 modes implemented (2 with Surgery, 3 standard placeholders)
+- All 12 layers analyzed (L1-L12)
+- GT boxes displayed with scaling
+- Image IDs shown for verification
+- Debug tools available
