@@ -180,15 +180,42 @@ class CLIPSurgeryWrapper:
         """编码文本"""
         return self.model.encode_text(text_list)
     
-    def get_patch_features(self, images):
+    def get_all_features(self, images):
         """
-        获取patch特征（去掉CLS token）
+        获取完整特征（包含CLS token + patches）- 符合VV机制格式
         
         Args:
             images: [B, 3, 224, 224]
         
         Returns:
-            patch_features: [B, 196, D]
+            all_features: [B, N+1, 512]  # CLS token + N patches
+            例如ViT-B-32: [B, 50, 512] = 1 CLS + 49 patches
+        """
+        return self.model.encode_image(images)
+    
+    def get_cls_features(self, images):
+        """
+        获取CLS token特征（全局特征）- 符合VV机制格式
+        
+        Args:
+            images: [B, 3, 224, 224]
+        
+        Returns:
+            cls_features: [B, 512]  # CLS token
+        """
+        all_features = self.model.encode_image(images)
+        return all_features[:, 0, :]  # [B, 512]
+    
+    def get_patch_features(self, images):
+        """
+        获取patch特征（去掉CLS token）- 向后兼容方法
+        
+        Args:
+            images: [B, 3, 224, 224]
+        
+        Returns:
+            patch_features: [B, N, 512]  # 只有patches，不含CLS token
+            例如ViT-B-32: [B, 49, 512]
         """
         all_features = self.model.encode_image(images)
         patch_features = all_features[:, 1:, :]  # 去掉CLS token

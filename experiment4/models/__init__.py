@@ -5,7 +5,7 @@
 
 from .clip_surgery import CLIPSurgery, CLIPSurgeryWrapper
 from .decomposer import TextGuidedDecomposer, ImageOnlyDecomposer
-from .noise_filter import RuleBasedDenoiser
+from .noise_filter_simple import SimplifiedDenoiser as RuleBasedDenoiser
 
 __all__ = [
     'CLIPSurgery',

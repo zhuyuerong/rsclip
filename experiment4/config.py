@@ -76,6 +76,11 @@ class Config:
     sparsity_method = "topk"  # "topk" or "threshold"
     sparsity_schedule = "constant"  # "constant" or "increasing"
     
+    # ===== VV机制配置 =====
+    use_vv_mechanism = True  # 是否使用VV机制
+    num_vv_blocks = 6  # 应用VV机制的层数（从后往前）
+    vv_scale_multiplier = 1.0  # VV路径的温度参数
+    
     # ===== 设备配置 =====
     device = "cuda" if torch.cuda.is_available() else "cpu"
     num_workers = 4

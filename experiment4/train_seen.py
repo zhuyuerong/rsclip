@@ -19,7 +19,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from experiment4.config import get_config
 from experiment4.models.clip_surgery import CLIPSurgeryWrapper
 from experiment4.models.decomposer import TextGuidedDecomposer, ImageOnlyDecomposer
-from experiment4.models.noise_filter import RuleBasedDenoiser
+from experiment4.models.noise_filter_simple import SimplifiedDenoiser as RuleBasedDenoiser
 from experiment4.data.dataset import get_dataloaders
 from experiment4.data.wordnet_utils import get_wordnet_words
 from experiment4.losses import compute_total_loss
@@ -59,8 +59,17 @@ class Experiment4Trainer:
         print("初始化模型...")
         
         # Surgery模型（预训练，frozen）
-        self.surgery_model = CLIPSurgeryWrapper(self.config)
-        print(f"  ✓ CLIP Surgery加载完成")
+        # 根据配置选择使用VV机制或标准Surgery
+        if self.config.use_vv_mechanism:
+            from experiment4.models.clip_surgery_vv import CLIPSurgeryVVWrapper
+            self.surgery_model = CLIPSurgeryVVWrapper(
+                self.config, 
+                num_vv_blocks=self.config.num_vv_blocks
+            )
+            print(f"  ✓ CLIP Surgery (VV机制) 加载完成，VV层数: {self.config.num_vv_blocks}")
+        else:
+            self.surgery_model = CLIPSurgeryWrapper(self.config)
+            print(f"  ✓ CLIP Surgery (标准) 加载完成")
         
         # 背景词表特征（预计算）
         self.bg_features = self.surgery_model.encode_text(self.config.background_words)
