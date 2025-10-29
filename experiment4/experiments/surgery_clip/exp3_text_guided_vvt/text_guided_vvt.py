@@ -20,16 +20,16 @@ import json
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
-# 添加实验目录
-exp_dir = Path(__file__).parent
-sys.path.append(str(exp_dir))
+# 添加surgery_clip目录
+surgery_clip_dir = Path(__file__).parent.parent
+sys.path.append(str(surgery_clip_dir))
 
 from experiment4.core.config import Config
 from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper, clip_feature_surgery, get_similarity_map
 from utils.seen_unseen_split import SeenUnseenDataset
 
 
-def generate_text_guided_vvt_heatmaps(model, images, text_queries, config, layers=[1, 3, 6, 9]):
+def generate_text_guided_vvt_heatmaps(model, images, text_queries, all_class_names, config, layers=[1, 3, 6, 9]):
     """
     生成文本引导的多层VV^T热图
     
@@ -37,6 +37,7 @@ def generate_text_guided_vvt_heatmaps(model, images, text_queries, config, layer
         model: CLIPSurgeryWrapper
         images: [B, 3, H, W]
         text_queries: list of str（每个图像对应一个文本查询）
+        all_class_names: list of str（所有20个类别，用于Surgery）
         config: Config对象
         layers: 要分析的层
     
@@ -48,24 +49,31 @@ def generate_text_guided_vvt_heatmaps(model, images, text_queries, config, layer
     # 提取多层特征（一次性）
     layer_features_dict = model.get_layer_features(images, layer_indices=layers)
     
+    # 编码所有类别文本（Surgery需要多个类别）
+    all_text_features = model.encode_text(all_class_names)  # [N_classes, C]
+    all_text_features = F.normalize(all_text_features, dim=-1)
+    
     heatmaps = {layer_idx: [] for layer_idx in layers}
     
-    # 逐样本处理（因为每个样本对应不同的文本）
+    # 逐样本处理（提取对应类别的热图）
     for b in range(B):
-        # 提取单个样本的文本特征
-        text_feature = model.encode_text([text_queries[b]])  # [1, C]
-        text_feature = F.normalize(text_feature, dim=-1)
+        # 找到目标类别的索引
+        target_class_idx = all_class_names.index(text_queries[b])
         
         for layer_idx in layers:
             # 获取该层该样本的特征
             image_feature = layer_features_dict[layer_idx][b:b+1]  # [1, N+1, C]
             
-            # 使用Feature Surgery计算相似度
-            similarity = clip_feature_surgery(image_feature, text_feature, t=2)
+            # 使用Feature Surgery计算相似度（所有类别）
+            similarity = clip_feature_surgery(image_feature, all_text_features, t=2)
+            # [1, N_patches, N_classes]
+            
+            # 只提取目标类别的相似度
+            target_similarity = similarity[:, :, target_class_idx:target_class_idx+1]
             # [1, N_patches, 1]
             
             # 生成热图（归一化 + reshape + 上采样）
-            heatmap = get_similarity_map(similarity, (config.image_size, config.image_size))
+            heatmap = get_similarity_map(target_similarity, (config.image_size, config.image_size))
             # [1, 1, H, W]
             
             heatmaps[layer_idx].append(heatmap)
@@ -222,14 +230,21 @@ def main():
     
     images = torch.cat(all_images, dim=0).to(config.device)  # [B, 3, H, W]
     
+    # DIOR数据集的20个类别
+    dior_class_names = ['airplane', 'airport', 'baseballfield', 'basketballcourt', 
+                       'bridge', 'chimney', 'dam', 'Expressway-Service-area',
+                       'Expressway-toll-station', 'golffield', 'groundtrackfield',
+                       'harbor', 'overpass', 'ship', 'stadium', 'storagetank',
+                       'tenniscourt', 'trainstation', 'vehicle', 'windmill']
+    
     # 生成多层热图
     print(f"\n生成多层热图...")
     heatmaps = generate_text_guided_vvt_heatmaps(
-        model, images, all_class_names, config, layers=args.layers
+        model, images, all_class_names, dior_class_names, config, layers=args.layers
     )
     
     # 可视化
-    output_dir = Path("experiment4/experiments/04_vv_multi_layer_analysis/outputs/vvt_heatmaps")
+    output_dir = Path(__file__).parent  # 保存在当前实验目录
     visualize_multi_layer_heatmaps(heatmaps, images, all_class_names, args.layers, output_dir)
     
     # 分析GT区域响应
