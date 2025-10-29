@@ -24,7 +24,7 @@ class DefaultConfig:
     
     # RemoteCLIP配置
     remoteclip_model: str = 'RN50'      # RemoteCLIP模型
-    remoteclip_checkpoint: str = 'checkpoints/RemoteCLIP-RN50.pt'
+    remoteclip_checkpoint: str = '../checkpoints/RemoteCLIP-RN50.pt'
     freeze_remoteclip: bool = True      # 冻结RemoteCLIP
     
     # 文本特征配置
@@ -54,7 +54,7 @@ class DefaultConfig:
     max_num_samples: int = 48           # 最大文本样本数
     
     # ==================== 数据配置 ====================
-    image_size: tuple = (800, 800)
+    image_size: tuple = (224, 224)      # ResNet backbone需要224x224
     num_classes: int = 20               # DIOR数据集类别数
     
     # ==================== 推理配置 ====================

@@ -1,0 +1,21 @@
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+======================================================================
+Experiment2 正确版本 - 完整DIOR数据集训练
+文本驱动位置预测 + 全局-局部对比学习
+======================================================================
+
+配置:
+  Batch size: 8
+  Epochs: 100
+  Workers: 4
+
+加载数据...
+Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_correct_DIOR.py", line 451, in <module>
+    train()
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_correct_DIOR.py", line 171, in train
+    train_dataset = DIORDataset(
+TypeError: __init__() got an unexpected keyword argument 'img_size'

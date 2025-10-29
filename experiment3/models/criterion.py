@@ -144,17 +144,10 @@ class SetCriterion(nn.Module):
             target_ious = torch.cat(target_ious, dim=0)
             
             # 分类损失
-            # 构建one-hot目标
-            target_onehot = torch.zeros(
-                pred_logits_matched.shape,
-                dtype=pred_logits_matched.dtype,
-                device=pred_logits_matched.device
-            )
-            target_onehot[torch.arange(len(target_labels_matched)), target_labels_matched] = 1.0
-            
+            # 直接传递类别标签，让varifocal_loss内部创建one-hot
             loss_cls = self.cls_loss(
                 pred_logits_matched,
-                target_onehot,
+                target_labels_matched.long(),  # 传递标签而不是one-hot
                 target_ious
             )
             

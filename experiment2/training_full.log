@@ -1,0 +1,217 @@
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
+WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
+======================================================================
+Experiment2: 上下文引导检测器训练
+数据集: mini_dataset
+======================================================================
+
+设备: cuda
+GPU: NVIDIA GeForce RTX 4090
+
+训练配置:
+  Batch size: 16
+  Epochs: 50
+  Learning rate: 0.0001
+
+加载数据集...
+✅ 加载Mini Dataset (train): 70张图片
+✅ 加载Mini Dataset (val): 15张图片
+  训练集: 70 张图
+  验证集: 15 张图
+
+创建模型...
+🔄 加载RemoteCLIP图像编码器: RN50
+📦 加载RemoteCLIP权重: ../checkpoints/RemoteCLIP-RN50.pt
+✅ RemoteCLIP权重加载成功
+🔄 加载RemoteCLIP文本编码器: RN50
+📦 加载RemoteCLIP权重: ../checkpoints/RemoteCLIP-RN50.pt
+✅ RemoteCLIP权重加载成功
+
+模型参数:
+  总参数: 211,570,118 (211.6M)
+  可训练: 109,562,981 (109.6M)
+
+提取文本特征...
+  文本特征: torch.Size([20, 1024])
+
+创建损失函数...
+
+创建优化器...
+
+======================================================================
+开始训练
+======================================================================
+
+Epoch 1/50
+----------------------------------------------------------------------
+Epoch 1:   0%|          | 0/5 [00:00<?, ?it/s]Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 73, in train_one_epoch
+    outputs = model(images, text_feats)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/models/context_guided_detector.py", line 152, in forward
+    text_features = self.text_encoder(text_queries)  # (num_classes, d_clip)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/stage1_encoder/clip_text_encoder.py", line 52, in forward
+    text = self.tokenizer(text_queries).to(next(self.model.parameters()).device)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in __call__
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in <listcomp>
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 215, in encode
+    text = self.clean_fn(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 85, in _clean_lower
+    return whitespace_clean(basic_clean(x)).lower()
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 67, in basic_clean
+    text = ftfy.fix_text(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/ftfy/__init__.py", line 349, in fix_text
+    textbreak = text.find("\n", pos) + 1
+AttributeError: 'Tensor' object has no attribute 'find'
+Epoch 1:  20%|██        | 1/5 [00:01<00:04,  1.01s/it]Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 73, in train_one_epoch
+    outputs = model(images, text_feats)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/models/context_guided_detector.py", line 152, in forward
+    text_features = self.text_encoder(text_queries)  # (num_classes, d_clip)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/stage1_encoder/clip_text_encoder.py", line 52, in forward
+    text = self.tokenizer(text_queries).to(next(self.model.parameters()).device)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in __call__
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in <listcomp>
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 215, in encode
+    text = self.clean_fn(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 85, in _clean_lower
+    return whitespace_clean(basic_clean(x)).lower()
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 67, in basic_clean
+    text = ftfy.fix_text(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/ftfy/__init__.py", line 349, in fix_text
+    textbreak = text.find("\n", pos) + 1
+AttributeError: 'Tensor' object has no attribute 'find'
+Epoch 1:  40%|████      | 2/5 [00:01<00:02,  1.32it/s]Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 73, in train_one_epoch
+    outputs = model(images, text_feats)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/models/context_guided_detector.py", line 152, in forward
+    text_features = self.text_encoder(text_queries)  # (num_classes, d_clip)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/stage1_encoder/clip_text_encoder.py", line 52, in forward
+    text = self.tokenizer(text_queries).to(next(self.model.parameters()).device)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in __call__
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in <listcomp>
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 215, in encode
+    text = self.clean_fn(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 85, in _clean_lower
+    return whitespace_clean(basic_clean(x)).lower()
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 67, in basic_clean
+    text = ftfy.fix_text(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/ftfy/__init__.py", line 349, in fix_text
+    textbreak = text.find("\n", pos) + 1
+AttributeError: 'Tensor' object has no attribute 'find'
+Epoch 1:  60%|██████    | 3/5 [00:02<00:01,  1.45it/s]Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 73, in train_one_epoch
+    outputs = model(images, text_feats)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/models/context_guided_detector.py", line 152, in forward
+    text_features = self.text_encoder(text_queries)  # (num_classes, d_clip)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/stage1_encoder/clip_text_encoder.py", line 52, in forward
+    text = self.tokenizer(text_queries).to(next(self.model.parameters()).device)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in __call__
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in <listcomp>
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 215, in encode
+    text = self.clean_fn(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 85, in _clean_lower
+    return whitespace_clean(basic_clean(x)).lower()
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 67, in basic_clean
+    text = ftfy.fix_text(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/ftfy/__init__.py", line 349, in fix_text
+    textbreak = text.find("\n", pos) + 1
+AttributeError: 'Tensor' object has no attribute 'find'
+Epoch 1:  80%|████████  | 4/5 [00:02<00:00,  1.49it/s]Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 73, in train_one_epoch
+    outputs = model(images, text_feats)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/models/context_guided_detector.py", line 152, in forward
+    text_features = self.text_encoder(text_queries)  # (num_classes, d_clip)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/stage1_encoder/clip_text_encoder.py", line 52, in forward
+    text = self.tokenizer(text_queries).to(next(self.model.parameters()).device)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in __call__
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 256, in <listcomp>
+    all_tokens = [[self.sot_token_id] + self.encode(text) + [self.eot_token_id] for text in texts]
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 215, in encode
+    text = self.clean_fn(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 85, in _clean_lower
+    return whitespace_clean(basic_clean(x)).lower()
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/open_clip/tokenizer.py", line 67, in basic_clean
+    text = ftfy.fix_text(text)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/ftfy/__init__.py", line 349, in fix_text
+    textbreak = text.find("\n", pos) + 1
+AttributeError: 'Tensor' object has no attribute 'find'
+Epoch 1: 100%|██████████| 5/5 [00:03<00:00,  1.71it/s]Epoch 1: 100%|██████████| 5/5 [00:03<00:00,  1.53it/s]
+
+❌ Batch 0 出错: 'Tensor' object has no attribute 'find'
+
+❌ Batch 1 出错: 'Tensor' object has no attribute 'find'
+
+❌ Batch 2 出错: 'Tensor' object has no attribute 'find'
+
+❌ Batch 3 出错: 'Tensor' object has no attribute 'find'
+
+❌ Batch 4 出错: 'Tensor' object has no attribute 'find'
+
+训练 - Loss: 0.0000
+  分类损失: 0.0000
+  框损失: 0.0000
+  对比损失: 0.0000
+Validating:   0%|          | 0/1 [00:00<?, ?it/s]Validating:   0%|          | 0/1 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 374, in <module>
+    main()
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 312, in main
+    val_metrics = validate(model, val_loader, criterion, device, text_features)
+  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/train_mini_dataset.py", line 151, in validate
+    images = torch.stack(images).to(device)
+TypeError: stack(): argument 'tensors' (position 1) must be tuple of Tensors, not Tensor

@@ -1,0 +1,51 @@
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
+  warnings.warn(
+WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
+======================================================================
+Experiment1 在 Mini Dataset 上的评估 (含mAP)
+======================================================================
+
+设备: cuda
+
+加载RemoteCLIP模型...
+🔄 加载RemoteCLIP模型: RN50
+✅ 模型已加载到 cuda
+  文本特征: torch.Size([20, 1024])
+
+加载mini_dataset...
+  测试集: 15 张图
+
+开始推理...
+  0%|          | 0/15 [00:00<?, ?it/s]  7%|▋         | 1/15 [00:03<00:42,  3.05s/it] 13%|█▎        | 2/15 [00:05<00:36,  2.78s/it] 20%|██        | 3/15 [00:09<00:36,  3.05s/it] 27%|██▋       | 4/15 [00:11<00:31,  2.83s/it] 33%|███▎      | 5/15 [00:14<00:27,  2.73s/it] 40%|████      | 6/15 [00:16<00:24,  2.69s/it] 47%|████▋     | 7/15 [00:19<00:21,  2.66s/it] 53%|█████▎    | 8/15 [00:21<00:18,  2.66s/it] 60%|██████    | 9/15 [00:24<00:15,  2.63s/it] 67%|██████▋   | 10/15 [00:26<00:12,  2.54s/it] 73%|███████▎  | 11/15 [00:31<00:12,  3.13s/it] 80%|████████  | 12/15 [00:33<00:08,  2.93s/it] 87%|████████▋ | 13/15 [00:36<00:05,  2.75s/it] 93%|█████████▎| 14/15 [00:38<00:02,  2.65s/it]100%|██████████| 15/15 [00:41<00:00,  2.60s/it]100%|██████████| 15/15 [00:41<00:00,  2.73s/it]
+
+======================================================================
+计算mAP@50...
+======================================================================
+
+mAP@50: 9.51%
+
+各类别AP:
+  golffield           : AP= 84.8% | GT= 2 | 预测=  9 | 匹配= 2
+  baseballfield       : AP= 14.3% | GT= 1 | 预测= 42 | 匹配= 1
+  bridge              : AP= 10.0% | GT= 1 | 预测= 24 | 匹配= 1
+  chimney             : AP=  5.0% | GT= 1 | 预测= 20 | 匹配= 1
+  Expressway-toll-station: AP=  0.0% | GT= 2 | 预测=103 | 匹配= 0
+  groundtrackfield    : AP=  0.0% | GT= 1 | 预测= 91 | 匹配= 0
+  overpass            : AP=  0.0% | GT= 3 | 预测=  3 | 匹配= 0
+  ship                : AP=  0.0% | GT= 1 | 预测= 97 | 匹配= 0
+  tenniscourt         : AP=  0.0% | GT= 4 | 预测= 23 | 匹配= 0
+  trainstation        : AP=  0.0% | GT= 2 | 预测= 23 | 匹配= 0
+  vehicle             : AP=  0.0% | GT=30 | 预测= 38 | 匹配= 0
+  windmill            : AP=  0.0% | GT=13 | 预测=441 | 匹配= 0
+
+✅ 结果保存到: outputs/exp1_mini_results.json
+
+======================================================================
+总结
+======================================================================
+  mAP@50:    9.51%
+  测试图片:  15
+  总GT框:    61
+  总预测框:  1885

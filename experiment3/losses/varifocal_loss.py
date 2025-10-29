@@ -72,21 +72,28 @@ class VarifocalLoss(nn.Module):
         pred_probs = torch.sigmoid(pred_logits)
         
         # 处理目标格式
-        if targets.dim() == 2:
-            # (B, num_queries) -> (B, num_queries, num_classes)
-            num_classes = pred_logits.shape[-1]
-            targets_onehot = F.one_hot(targets, num_classes=num_classes).float()
+        num_classes = pred_logits.shape[-1]
+        
+        if targets.dim() == 1:
+            # [N] -> [N, num_classes] one-hot
+            targets_onehot = F.one_hot(targets.long(), num_classes=num_classes).float()
+        elif targets.dim() == 2 and targets.shape[-1] != num_classes:
+            # [B, num_queries] -> [B, num_queries, num_classes]
+            targets_onehot = F.one_hot(targets.long(), num_classes=num_classes).float()
         else:
+            # 已经是one-hot格式
             targets_onehot = targets
         
         # 目标质量分数
         if target_scores is None:
             # 如果没有提供IoU，使用1.0作为正样本的质量分数
-            target_scores = targets_onehot.sum(dim=-1, keepdim=True)
+            target_scores_expanded = targets_onehot
         else:
-            # 扩展维度以匹配one-hot编码
-            if target_scores.dim() == 2:
+            # 扩展target_scores到与targets_onehot相同的形状
+            # target_scores: [N] -> [N, num_classes]
+            while target_scores.dim() < targets_onehot.dim():
                 target_scores = target_scores.unsqueeze(-1)
+            target_scores_expanded = target_scores.expand_as(targets_onehot)
         
         # 计算变焦损失
         # 正样本: -q * (q - p)^gamma * log(p)
@@ -98,7 +105,7 @@ class VarifocalLoss(nn.Module):
         # 正样本损失
         if self.iou_weighted:
             # 使用IoU加权
-            focal_weight = target_scores * torch.abs(target_scores - pred_probs) ** self.gamma
+            focal_weight = target_scores_expanded * torch.abs(target_scores_expanded - pred_probs) ** self.gamma
         else:
             focal_weight = torch.abs(targets_onehot - pred_probs) ** self.gamma
         

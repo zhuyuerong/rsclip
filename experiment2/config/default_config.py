@@ -86,7 +86,7 @@ class DefaultConfig:
     
     # ==================== CLIP 配置 ====================
     clip_model_name: str = "RN50"       # "RN50", "ViT-B-32", "ViT-L-14"
-    clip_checkpoint: str = "checkpoints/RemoteCLIP-RN50.pt"
+    clip_checkpoint: str = "../checkpoints/RemoteCLIP-RN50.pt"
     freeze_clip_backbone: bool = True   # 是否冻结 CLIP 主干
     
     # ==================== 推理配置 ====================

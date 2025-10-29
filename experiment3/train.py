@@ -227,7 +227,7 @@ def main(args):
         split='train',
         batch_size=config.batch_size,
         num_workers=args.num_workers,
-        transforms=train_transforms
+        transforms=train_transforms  # 已经传递了
     )
     
     val_loader = create_data_loader(
@@ -235,7 +235,7 @@ def main(args):
         split='val',
         batch_size=config.batch_size,
         num_workers=args.num_workers,
-        transforms=val_transforms
+        transforms=val_transforms  # 已经传递了
     )
     
     print(f"\n训练集: {len(train_loader.dataset)}张图片, {len(train_loader)}个批次")

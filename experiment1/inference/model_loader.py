@@ -49,6 +49,9 @@ class ModelLoader:
         # 加载权重
         checkpoint_path = f"checkpoints/RemoteCLIP-{self.model_name}.pt"
         if not os.path.exists(checkpoint_path):
+            # 尝试相对于项目根目录
+            checkpoint_path = f"../checkpoints/RemoteCLIP-{self.model_name}.pt"
+        if not os.path.exists(checkpoint_path):
             raise FileNotFoundError(f"模型权重文件不存在: {checkpoint_path}")
         
         ckpt = torch.load(checkpoint_path, map_location="cpu")

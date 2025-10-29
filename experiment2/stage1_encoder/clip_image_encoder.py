@@ -52,9 +52,14 @@ class CLIPImageEncoder(nn.Module):
             multi_scale_features: 多尺度特征（简化版，返回全局特征）
             global_embedding: (B, d_clip) 全局图像特征
         """
-        with torch.no_grad():
+        # 如果是训练模式，允许梯度
+        if self.training:
             global_embedding = self.model.encode_image(images)
             global_embedding = global_embedding / global_embedding.norm(dim=-1, keepdim=True)
+        else:
+            with torch.no_grad():
+                global_embedding = self.model.encode_image(images)
+                global_embedding = global_embedding / global_embedding.norm(dim=-1, keepdim=True)
         
         # 返回全局特征（多尺度特征简化为全局特征）
         multi_scale_features = global_embedding  # 简化实现
