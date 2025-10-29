@@ -20,9 +20,13 @@ import json
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
+# 添加实验目录
+exp_dir = Path(__file__).parent
+sys.path.append(str(exp_dir))
+
 from experiment4.core.config import Config
 from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper, clip_feature_surgery, get_similarity_map
-from experiment4.experiments.04_vv_multi_layer_analysis.utils.seen_unseen_split import SeenUnseenDataset
+from utils.seen_unseen_split import SeenUnseenDataset
 
 
 def generate_text_guided_vvt_heatmaps(model, images, text_queries, config, layers=[1, 3, 6, 9]):

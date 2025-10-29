@@ -18,9 +18,13 @@ import matplotlib.pyplot as plt
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
+# 添加实验目录
+exp_dir = Path(__file__).parent
+sys.path.append(str(exp_dir))
+
 from experiment4.core.config import Config
 from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper
-from experiment4.experiments.04_vv_multi_layer_analysis.utils.seen_unseen_split import SeenUnseenDataset
+from utils.seen_unseen_split import SeenUnseenDataset
 
 
 def analyze_patch_similarity_matrix(model, images, layer_idx=12, use_surgery=False):
@@ -106,11 +110,11 @@ def compare_surgery_impact(model, images, layer_idx=12, output_dir=None):
     
     # 1. 标准特征的相似度矩阵
     sim_matrix_standard = analyze_patch_similarity_matrix(model, images, layer_idx, use_surgery=False)
-    sim_matrix_standard_np = sim_matrix_standard[0].cpu().numpy()
+    sim_matrix_standard_np = sim_matrix_standard[0].detach().cpu().numpy()
     
     # 2. Surgery特征的相似度矩阵
     sim_matrix_surgery = analyze_patch_similarity_matrix(model, images, layer_idx, use_surgery=True)
-    sim_matrix_surgery_np = sim_matrix_surgery[0].cpu().numpy()
+    sim_matrix_surgery_np = sim_matrix_surgery[0].detach().cpu().numpy()
     
     # 3. 可视化对比
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))

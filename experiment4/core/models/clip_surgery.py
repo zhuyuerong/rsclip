@@ -560,7 +560,7 @@ class CLIPSurgeryWrapper:
     
     def get_layer_features(self, images, layer_indices=[1, 6, 9, 12]):
         """
-        提取指定层的特征
+        提取指定层的特征（包含投影到512维）
         
         Args:
             images: [B, 3, H, W]
@@ -568,9 +568,10 @@ class CLIPSurgeryWrapper:
         
         Returns:
             features_dict: {layer_idx: features} 各层特征字典
-                           features格式: [B, N+1, C] (NLD格式)
+                           features格式: [B, N+1, 512] (投影后)
         """
         features_dict = {}
+        intermediate_features = {}
         
         # 获取visual transformer
         if self.model is not None:
@@ -583,9 +584,9 @@ class CLIPSurgeryWrapper:
             def hook(module, input, output):
                 # 处理双路径输出（VV机制）
                 if isinstance(output, list):
-                    features_dict[layer_idx] = output[0]  # VV路径
+                    intermediate_features[layer_idx] = output[0].clone()  # VV路径
                 else:
-                    features_dict[layer_idx] = output
+                    intermediate_features[layer_idx] = output.clone()
             return hook
         
         handles = []
@@ -604,11 +605,26 @@ class CLIPSurgeryWrapper:
         for handle in handles:
             handle.remove()
         
-        # 转换格式: LND -> NLD ([L, B, C] -> [B, L, C])
-        for layer_idx in features_dict:
-            feat = features_dict[layer_idx]
-            if feat.dim() == 3 and feat.shape[0] < feat.shape[1]:  # LND格式
-                features_dict[layer_idx] = feat.permute(1, 0, 2)  # -> [B, L, C]
+        # 后处理：转换格式并投影到512维
+        for layer_idx in intermediate_features:
+            feat = intermediate_features[layer_idx]
+            
+            # 转换格式: LND -> NLD ([L, B, C] -> [B, L, C])
+            if feat.dim() == 3:
+                if feat.shape[0] > feat.shape[1]:  # LND格式 [L, B, C]
+                    feat = feat.permute(1, 0, 2)  # -> [B, L, C]
+            
+            # 应用layer norm和投影（如果存在）
+            if hasattr(visual, 'ln_post'):
+                feat = visual.ln_post(feat)
+            
+            if hasattr(visual, 'proj') and visual.proj is not None:
+                # 投影到512维
+                if feat.dtype != visual.proj.dtype:
+                    feat = feat.to(visual.proj.dtype)
+                feat = feat @ visual.proj
+            
+            features_dict[layer_idx] = feat
         
         return features_dict
 

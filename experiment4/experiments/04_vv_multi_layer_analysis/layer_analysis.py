@@ -22,9 +22,13 @@ import json
 root_dir = Path(__file__).parent.parent.parent.parent
 sys.path.append(str(root_dir))
 
+# 添加实验目录
+exp_dir = Path(__file__).parent
+sys.path.append(str(exp_dir))
+
 from experiment4.core.config import Config
 from experiment4.core.models.clip_surgery import CLIPSurgeryWrapper, clip_feature_surgery
-from experiment4.experiments.04_vv_multi_layer_analysis.utils.seen_unseen_split import SeenUnseenDataset
+from utils.seen_unseen_split import SeenUnseenDataset
 
 
 def compute_cosine_similarity(patch_features, text_features):
