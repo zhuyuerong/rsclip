@@ -77,11 +77,11 @@ def generate_multi_mode_heatmaps(models, image, query_class, all_dior_classes, a
     return heatmaps_per_mode
 
 
-def visualize_5mode_comparison(image_data, query_class, heatmaps_per_mode, bboxes, layers, modes, output_path):
+def visualize_4mode_comparison(image_data, query_class, heatmaps_per_mode, bboxes, layers, modes, output_path):
     """
-    Visualize 5-mode comparison for a single class query
+    Visualize 4-mode comparison for a single class query
     
-    Layout: 5 modes x (1 original + 12 layers) columns
+    Layout: 4 modes x (1 original + 12 layers) columns
     """
     num_modes = len(modes)
     num_layers = len(layers)
@@ -98,7 +98,7 @@ def visualize_5mode_comparison(image_data, query_class, heatmaps_per_mode, bboxe
     scale_x = 224.0 / original_w
     scale_y = 224.0 / original_h
     
-    # Create figure: 5 modes x (1 + num_layers) columns
+    # Create figure: 4 modes x (1 + num_layers) columns
     fig, axes = plt.subplots(num_modes, num_layers + 1, 
                             figsize=(2.5 * (num_layers + 1), 2.5 * num_modes))
     
@@ -176,17 +176,16 @@ def main():
     
     dior_prompts = [f"an aerial photo of {cls}" for cls in dior_classes]
     
-    # 5 modes
+    # 4 modes
     mode_configs = {
         '1.With Surgery': {'use_surgery': True, 'use_vv': False},
         '2.Without Surgery': {'use_surgery': False, 'use_vv': False},
-        '3.With VV': {'use_surgery': False, 'use_vv': False},  # Placeholder
-        '4.Standard QKV': {'use_surgery': False, 'use_vv': False},
-        '5.Complete Surgery': {'use_surgery': True, 'use_vv': False},  # Placeholder
+        '3.With VV': {'use_surgery': False, 'use_vv': True},
+        '4.Complete Surgery': {'use_surgery': True, 'use_vv': True},
     }
     
     print("=" * 70)
-    print("Multi-Class Heatmap Generator (5-Mode Comparison)")
+    print("Multi-Class Heatmap Generator (4-Mode Comparison)")
     print("=" * 70)
     print(f"Dataset: {args.dataset}")
     print(f"Layers: {args.layers}")
@@ -201,10 +200,14 @@ def main():
     print("\nLoading models for all modes...")
     models = {}
     for mode_name, mode_config in mode_configs.items():
-        config.use_surgery = mode_config['use_surgery']
-        config.use_vv_mechanism = mode_config['use_vv']
-        models[mode_name] = CLIPSurgeryWrapper(config)
-        print(f"  {mode_name}: loaded")
+        # 为每个模式创建独立的config实例
+        mode_cfg = Config()
+        mode_cfg.dataset_root = args.dataset
+        mode_cfg.device = config.device
+        mode_cfg.use_surgery = mode_config['use_surgery']
+        mode_cfg.use_vv_mechanism = mode_config['use_vv']
+        models[mode_name] = CLIPSurgeryWrapper(mode_cfg)
+        print(f"  {mode_name}: loaded (surgery={mode_config['use_surgery']}, vv={mode_config['use_vv']})")
     
     # Load dataset
     unseen_classes = ['airplane', 'bridge', 'storagetank', 'vehicle', 'windmill']
@@ -242,21 +245,21 @@ def main():
             'original_size': sample['original_size']
         }
         
-        # Generate heatmaps for each unique class (5 modes per class)
-        print(f"Generating 5-mode heatmaps for {len(unique_classes)} classes...")
+        # Generate heatmaps for each unique class (4 modes per class)
+        print(f"Generating 4-mode heatmaps for {len(unique_classes)} classes...")
         
         for query_class in unique_classes:
             print(f"  Query: {query_class}")
             
-            # Generate heatmaps for all 5 modes
+            # Generate heatmaps for all 4 modes
             heatmaps_per_mode = generate_multi_mode_heatmaps(
                 models, image_tensor, query_class,
                 dior_classes, dior_prompts, config, args.layers
             )
             
-            # Visualize 5-mode comparison
+            # Visualize 4-mode comparison
             output_path = output_dir / f'{sample["image_id"]}_{query_class}.png'
-            visualize_5mode_comparison(
+            visualize_4mode_comparison(
                 image_data, query_class, heatmaps_per_mode,
                 sample['bboxes'], args.layers, list(mode_configs.keys()), output_path
             )

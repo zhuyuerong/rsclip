@@ -139,10 +139,13 @@ class VVAttention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def forward(self, x):
+    def forward(self, x, x_kv=None, x_q=None, need_weights=False, attn_mask=None):
         """
         Args:
             x: [B, N, C] or [N, B, C] (LND格式)
+            x_kv, x_q: 兼容CLIP调用，但实际不使用
+            need_weights: 兼容CLIP调用，但实际不使用
+            attn_mask: 兼容CLIP调用，但实际不使用
         Returns:
             [x_vv, x_ori]: VV路径和原始路径的输出
         """
