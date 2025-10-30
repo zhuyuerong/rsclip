@@ -583,6 +583,32 @@ class CLIPSurgeryWrapper:
         all_features = self.encode_image(images)
         return all_features[:, 1:, :]
     
+    # ===== 统一相似度计算接口 =====
+    def _vanilla_similarity(self, image_features: torch.Tensor, text_features: torch.Tensor) -> torch.Tensor:
+        """
+        纯CLIP余弦相似度（对patch与文本均进行L2归一化）
+        Args:
+            image_features: [B, N+1, C]
+            text_features: [K, C]
+        Returns:
+            similarity: [B, N_patches, K]
+        """
+        patch_features = image_features[:, 1:, :]
+        patch_features = F.normalize(patch_features, dim=-1)
+        text_features = F.normalize(text_features, dim=-1)
+        return patch_features @ text_features.t()
+    
+    def compute_similarity(self, image_features: torch.Tensor, text_features: torch.Tensor) -> torch.Tensor:
+        """
+        根据当前配置计算相似度
+        - VV 影响已体现在 encode_image 产生的 image_features 中
+        - use_surgery 决定是否执行 Feature Surgery 去冗余
+        Returns: [B, N_patches, K]
+        """
+        if self.use_surgery:
+            return clip_feature_surgery(image_features, text_features, t=2)
+        return self._vanilla_similarity(image_features, text_features)
+    
     def get_layer_features(self, images, layer_indices=[1, 6, 9, 12]):
         """
         提取指定层的特征（包含投影到512维）
