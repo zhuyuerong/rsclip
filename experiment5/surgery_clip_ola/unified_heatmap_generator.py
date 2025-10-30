@@ -240,38 +240,44 @@ class UnifiedHeatmapGenerator:
         ]
         self.dior_prompts = [f"an aerial photo of {cls}" for cls in self.dior_classes_raw]
         
-        # 4种模式配置（严格一一对应，避免占位符）
+        # 3种模式配置：Baseline / Complete Surgery / Baseline+OLA
         self.mode_configs = {
-            '1.With Surgery': {'use_surgery': True, 'use_vv': False},
-            '2.Without Surgery': {'use_surgery': False, 'use_vv': False},
-            '3.With VV': {'use_surgery': False, 'use_vv': True},
-            '4.Complete Surgery': {'use_surgery': True, 'use_vv': True},
+            '1.Baseline': {'use_surgery': False, 'use_vv': False, 'use_ola': False},
+            '2.Complete Surgery': {'use_surgery': True, 'use_vv': True, 'use_ola': False},
+            '3.Baseline+OLA': {'use_surgery': False, 'use_vv': False, 'use_ola': True},
         }
         
         # 加载所有模式模型
         self.models = self._load_all_models()
     
     def _load_all_models(self):
-        """加载所有4种模式的模型"""
-        print("Loading models for all 4 modes...")
+        """加载baseline和complete surgery两个模型（Row3复用baseline）"""
+        print("Loading models for 3-mode comparison...")
         models = {}
         
-        for mode_name, mode_config in self.mode_configs.items():
-            # 为每个模式创建独立的config实例
-            mode_cfg = Config()
-            mode_cfg.dataset_root = self.config.dataset_root
-            mode_cfg.device = self.device
-            mode_cfg.use_surgery = mode_config['use_surgery']
-            mode_cfg.use_vv_mechanism = mode_config['use_vv']
-            
-            models[mode_name] = CLIPSurgeryWrapper(mode_cfg)
-            print(f"  {mode_name}: loaded (surgery={mode_config['use_surgery']}, vv={mode_config['use_vv']})")
+        # Baseline model (用于Row1和Row3)
+        cfg_baseline = Config()
+        cfg_baseline.dataset_root = self.config.dataset_root
+        cfg_baseline.device = self.device
+        cfg_baseline.use_surgery = False
+        cfg_baseline.use_vv_mechanism = False
+        models['baseline'] = CLIPSurgeryWrapper(cfg_baseline)
+        print("  Baseline: loaded (RemoteCLIP + cosine)")
+        
+        # Complete Surgery model (用于Row2)
+        cfg_complete = Config()
+        cfg_complete.dataset_root = self.config.dataset_root
+        cfg_complete.device = self.device
+        cfg_complete.use_surgery = True
+        cfg_complete.use_vv_mechanism = True
+        models['complete'] = CLIPSurgeryWrapper(cfg_complete)
+        print("  Complete Surgery: loaded (Surgery + VV)")
         
         return models
     
     def generate_multi_mode_heatmaps(self, image, query_class, layers):
         """
-        为一个查询类别生成4种模式的热图（支持OLA去接缝）
+        为一个查询类别生成3种模式的热图（支持OLA去接缝）
         
         Args:
             image: [1, 3, H, W] single image
@@ -287,14 +293,22 @@ class UnifiedHeatmapGenerator:
         
         out_h, out_w = self.config.image_size, self.config.image_size
         
-        for mode_name, model in self.models.items():
+        for mode_name, mode_cfg in self.mode_configs.items():
+            # 选择模型（Row1和Row3用baseline，Row2用complete）
+            if mode_name == '2.Complete Surgery':
+                model = self.models['complete']
+            else:
+                model = self.models['baseline']
             heatmaps_per_mode[mode_name] = {}
             
             # 编码所有类别文本
             all_text_features = model.encode_text(self.dior_prompts)
             all_text_features = F.normalize(all_text_features, dim=-1)
             
-            if not self.enable_ola:
+            # Row3启用OLA，Row1和Row2不启用
+            use_ola_for_this_mode = mode_cfg['use_ola']
+            
+            if not use_ola_for_this_mode:
                 # ========== 原始路径：整图一次性计算 ==========
                 layer_features_dict = model.get_layer_features(image, layer_indices=layers)
                 
@@ -349,11 +363,11 @@ class UnifiedHeatmapGenerator:
         
         return heatmaps_per_mode
     
-    def visualize_4mode_comparison(self, image_data, query_class, heatmaps_per_mode, bboxes, layers, output_path):
+    def visualize_3mode_comparison(self, image_data, query_class, heatmaps_per_mode, bboxes, layers, output_path):
         """
-        可视化4模式对比
+        可视化3模式对比
         
-        Layout: 4 modes x (1 original + 12 layers) columns
+        Layout: 3 modes x (1 original + N layers) columns
         """
         num_modes = len(self.mode_configs)
         num_layers = len(layers)
@@ -569,8 +583,8 @@ class UnifiedHeatmapGenerator:
         if layers is None:
             layers = list(range(1, 13))
         
-        # 统一输出目录至 results/multi_class_4mode
-        output_dir = Path(__file__).parent / 'results' / 'multi_class_4mode'
+        # 统一输出目录至 results/3mode_comparison
+        output_dir = Path(__file__).parent / 'results' / '3mode_comparison'
         output_dir.mkdir(parents=True, exist_ok=True)
         
         processed = 0
@@ -604,40 +618,35 @@ class UnifiedHeatmapGenerator:
                 'original_size': sample.get('original_size', (224, 224))
             }
             
-            # 为每个唯一类别生成4模式热图
-            print(f"Generating 4-mode heatmaps for {len(unique_classes)} classes...")
+            # 为每个唯一类别生成3模式热图
+            print(f"Generating 3-mode heatmaps for {len(unique_classes)} classes...")
             
             for query_class in unique_classes:
                 print(f"  Query: {query_class}")
                 
-                # 生成4模式热图
+                # 生成3模式热图
                 heatmaps_per_mode = self.generate_multi_mode_heatmaps(
                     image_tensor, query_class, layers
                 )
                 
-                # 可视化4模式对比
+                # 可视化3模式对比
                 output_path = output_dir / f'{sample["image_id"]}_{query_class}.png'
-                self.visualize_4mode_comparison(
+                self.visualize_3mode_comparison(
                     image_data, query_class, heatmaps_per_mode,
                     sample['bboxes'], layers, output_path
                 )
                 
                 print(f"    Saved: {output_path.name}")
                 
-                # 如果启用OLA，保存诊断图
-                if self.enable_ola and 'acc_w' in heatmaps_per_mode.get(list(self.mode_configs.keys())[0], {}):
-                    diagnosis_dir = output_dir.parent / 'ola_diagnosis'
-                    diagnosis_dir.mkdir(parents=True, exist_ok=True)
-                    
-                    # 使用第一个模式的acc_w（所有模式应该相同）
-                    first_mode = list(self.mode_configs.keys())[0]
-                    acc_w = heatmaps_per_mode[first_mode]['acc_w']
+                # 保存Row3的OLA诊断图
+                if 'acc_w' in heatmaps_per_mode.get('3.Baseline+OLA', {}):
+                    diagnosis_path = output_dir / f'{sample["image_id"]}_{query_class}_ola_diag.png'
+                    acc_w = heatmaps_per_mode['3.Baseline+OLA']['acc_w']
                     last_layer = layers[-1]
-                    last_heatmap = heatmaps_per_mode[first_mode][last_layer]
+                    last_heatmap = heatmaps_per_mode['3.Baseline+OLA'][last_layer]
                     
-                    diagnosis_path = diagnosis_dir / f'{sample["image_id"]}_{query_class}_diagnosis.png'
                     visualize_ola_diagnosis(image_tensor, last_heatmap, acc_w, diagnosis_path)
-                    print(f"    Diagnosis saved: {diagnosis_path.name}")
+                    print(f"    Diagnosis: {diagnosis_path.name}")
             
             processed += 1
         
@@ -661,9 +670,7 @@ def main():
                         help='要分析的层')
     parser.add_argument('--debug-samples', type=int, default=3,
                         help='GT调试样本数')
-    # OLA参数
-    parser.add_argument('--use-ola', action='store_true',
-                        help='启用OLA加权拼接（消除接缝条纹）')
+    # OLA参数（Row3始终启用）
     parser.add_argument('--tile-size', type=int, default=224,
                         help='OLA滑窗大小')
     parser.add_argument('--tile-stride', type=int, default=112,
@@ -678,31 +685,30 @@ def main():
     args = parser.parse_args()
     
     print("=" * 80)
-    print("Experiment 5: 统一热图生成器 - OLA去接缝版本")
+    print("Experiment 5: 3-Mode Comparison (Baseline / Complete / OLA)")
     print("=" * 80)
     print(f"数据集: {args.dataset}")
     print(f"运行模式: {args.mode}")
     print(f"最大样本数: {args.max_samples}")
     print(f"分析层: {args.layers}")
     print(f"GT调试样本数: {args.debug_samples}")
-    print(f"OLA模式: {args.use_ola}")
-    if args.use_ola:
-        print(f"  Tile size: {args.tile_size}")
-        print(f"  Tile stride: {args.tile_stride}")
-        print(f"  Percentile normalization: {args.percentile} (pmin={args.pmin}, pmax={args.pmax})")
+    print(f"OLA (Row3): Always enabled for Baseline+OLA")
+    print(f"  Tile size: {args.tile_size}")
+    print(f"  Tile stride: {args.tile_stride}")
+    print(f"  Percentile: pmin={args.pmin}, pmax={args.pmax}")
     
     # 配置
     config = Config()
     config.dataset_root = args.dataset
     config.device = "cuda" if torch.cuda.is_available() else "cpu"
     
-    # 创建生成器（传入OLA参数）
+    # 创建生成器（OLA参数用于Row3）
     generator = UnifiedHeatmapGenerator(
         config, 
-        enable_ola=args.use_ola,
+        enable_ola=True,  # Row3始终启用OLA
         tile_size=args.tile_size,
         tile_stride=args.tile_stride,
-        use_percentile=args.percentile,
+        use_percentile=args.percentile if hasattr(args, 'percentile') else True,
         pmin=args.pmin,
         pmax=args.pmax
     )
