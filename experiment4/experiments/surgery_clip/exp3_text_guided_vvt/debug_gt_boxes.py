@@ -170,3 +170,4 @@ if __name__ == '__main__':
     print("Check the output images to verify GT box positions!")
     print("=" * 60)
 
+
