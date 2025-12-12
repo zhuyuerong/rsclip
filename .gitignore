@@ -97,3 +97,9 @@ checkpoints/
 *.bin
 *.safetensors
 
+
+# Large COCO annotation files
+datasets/COCO/annotations/*.json
+
+# Large ONNX model files
+*.onnx.data
