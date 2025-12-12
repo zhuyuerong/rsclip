@@ -103,3 +103,29 @@ datasets/COCO/annotations/*.json
 
 # Large ONNX model files
 *.onnx.data
+
+# Python缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 训练日志（保留最新的，但不上传）
+*.log
+!README*.log
+
+# 训练权重（checkpoints目录已排除，这里确保单独文件也被排除）
+checkpoints/**/*.pth
+checkpoints/**/*.pt
+checkpoints/**/*.ckpt
+
+# wandb缓存
+wandb/
