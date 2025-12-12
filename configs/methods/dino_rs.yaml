@@ -1,0 +1,47 @@
+# Experiment 2: DINO-RS 端到端检测器配置
+
+# 模型配置
+model:
+  name: "RN50"  # RN50, ViT-B-32, ViT-L-14
+  checkpoint_path: "checkpoints/RemoteCLIP-RN50.pt"
+  freeze_backbone: true
+
+# 数据配置
+data:
+  dataset: "DIOR"  # DIOR or mini
+  data_dir: "datasets/DIOR"
+  split: "train"  # train, val, test
+  mode: "seen"  # seen (开放词汇) or all (闭集)
+  image_size: 800
+  batch_size: 4
+  num_workers: 4
+  augment: true
+
+# 训练配置
+training:
+  epochs: 50
+  learning_rate: 1e-4
+  weight_decay: 1e-4
+  warmup_epochs: 5
+  lr_scheduler: "cosine"
+  min_lr: 1e-6
+
+# 损失权重
+loss:
+  position_weight: 1.0
+  contrast_weight: 1.0
+  bbox_weight: 1.0
+  giou_weight: 1.0
+
+# 日志配置
+logging:
+  use_wandb: false
+  project_name: "Experiment2-TextDriven"
+  log_dir: "outputs/logs"
+
+# 保存配置
+save:
+  output_dir: "outputs"
+  save_freq: 5  # 每N个epoch保存一次
+  checkpoint_dir: "outputs/checkpoints"
+

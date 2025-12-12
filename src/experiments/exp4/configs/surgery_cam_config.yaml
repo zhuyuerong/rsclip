@@ -1,0 +1,43 @@
+# SurgeryCAM Detector Configuration
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7  # ViT-B/32 patch resolution
+upsample_cam: false  # Whether to upsample CAM to 14x14
+
+# Training configuration
+device: "cuda"  # 使用GPU训练
+num_epochs: 100
+batch_size: 8  # GPU训练时可以增大batch size
+learning_rate: 1.0e-4
+cam_generator_lr: 1.0e-5  # CAM生成器的学习率（更小）
+weight_decay: 0.01
+
+# Loss configuration
+lambda_l1: 1.0
+lambda_giou: 2.0
+lambda_cam: 0.5
+
+# Multi-instance assigner configuration
+min_peak_distance: 2
+min_peak_value: 0.3
+match_iou_threshold: 0.3
+
+# Data configuration
+dataset_root: null  # If null, will try to find in common locations
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true  # 训练时只使用seen类别（开放词汇检测设置）
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints"
+output_dir: "outputs"
+
+# Evaluation configuration
+conf_threshold: 0.1  # 降低阈值以增加检测数量（原0.3可能过高）
+nms_threshold: 0.5
+

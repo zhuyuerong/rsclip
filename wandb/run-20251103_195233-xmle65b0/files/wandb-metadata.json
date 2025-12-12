@@ -1,0 +1,56 @@
+{
+  "os": "Linux-6.8.0-85-generic-x86_64-with-glibc2.35",
+  "python": "CPython 3.9.23",
+  "startedAt": "2025-11-03T11:52:33.561449Z",
+  "args": [
+    "--dataset",
+    "DIOR",
+    "--mode",
+    "seen",
+    "--epochs",
+    "50",
+    "--batch_size",
+    "2",
+    "--image_size",
+    "800",
+    "--use_wandb",
+    "--run_name",
+    "DIOR_temp1.0_pos10_50epochs",
+    "--output_dir",
+    "experiment2/outputs/checkpoints/DIOR_temp1.0_final"
+  ],
+  "program": "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/scripts/train.py",
+  "codePath": "experiment2/scripts/train.py",
+  "codePathLocal": "experiment2/scripts/train.py",
+  "git": {
+    "commit": "dde5d8a2de63005093dbdd0ebb43cb4639f4b875"
+  },
+  "email": "3074143509@qq.com",
+  "root": "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main",
+  "host": "ubuntu22",
+  "executable": "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/bin/python3.9",
+  "cpu_count": 20,
+  "cpu_count_logical": 28,
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "92749000704",
+      "used": "78640566272"
+    }
+  },
+  "memory": {
+    "total": "33316122624"
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce RTX 4090",
+      "memoryTotal": "25757220864",
+      "cudaCores": 16384,
+      "architecture": "Ada",
+      "uuid": "GPU-82080d2e-1c86-7316-cdae-683d7901f7a0"
+    }
+  ],
+  "cudaVersion": "12.2",
+  "writerId": "4znr4emo1fiopi8zem0aak4aklb4at2o"
+}

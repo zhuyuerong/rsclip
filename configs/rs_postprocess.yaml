@@ -1,0 +1,19 @@
+# 遥感后处理配置
+
+# NMS配置
+nms:
+  iou_threshold: 0.5
+  score_threshold: 0.3
+  max_detections: 100
+
+# 热图转边界框
+heatmap_to_box:
+  method: "adaptive"  # baseline, adaptive, multiscale, superres, smooth
+  threshold: 0.5
+  min_box_area: 20
+
+# 切片合并
+merge_tiles:
+  enabled: false
+  overlap_threshold: 0.3
+

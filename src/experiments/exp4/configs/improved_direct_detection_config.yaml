@@ -1,0 +1,46 @@
+# 改进的直接检测配置
+# 移除或降低CAM损失权重，专注于检测质量
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+upsample_cam: false
+use_image_features: true
+
+# Training configuration
+device: "cuda"
+num_epochs: 50
+batch_size: 8
+learning_rate: 1.0e-4
+cam_generator_lr: 5.0e-5
+weight_decay: 0.01
+
+# Loss configuration - 关键改进
+lambda_l1: 1.0
+lambda_giou: 2.0
+lambda_conf: 1.0
+lambda_cam: 0.0  # 移除CAM损失，专注于检测质量
+focal_alpha: 0.25
+focal_gamma: 2.0
+pos_radius: 1.5
+use_cam_alignment: false  # 不使用CAM对齐损失
+
+# Data configuration
+dataset_root: null
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/improved_direct_detection"
+output_dir: "outputs/experiments/improved_direct_detection"
+
+# Evaluation configuration
+conf_threshold: 0.3
+nms_threshold: 0.5
+
+

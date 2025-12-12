@@ -1,72 +1,0 @@
-/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'repr' attribute with value False was provided to the `Field()` function, which has no effect in the context it was used. 'repr' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/pydantic/_internal/_generate_schema.py:2249: UnsupportedFieldAttributeWarning: The 'frozen' attribute with value True was provided to the `Field()` function, which has no effect in the context it was used. 'frozen' is field-specific metadata, and can only be attached to a model field using `Annotated` metadata or by assignment. This may have happened because an `Annotated` type alias using the `type` statement was used, or if the `Field()` function was attached to a single member of a union type.
-  warnings.warn(
-WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
-WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
-======================================================================
-Experiment2 完整检测评估
-自适应全局-局部对比学习
-======================================================================
-
-加载checkpoint: outputs/checkpoints/full_model_epoch_20.pth
-
-创建模型组件...
-🔄 加载RemoteCLIP文本编码器: RN50
-📦 加载RemoteCLIP权重: ../checkpoints/RemoteCLIP-RN50.pt
-✅ RemoteCLIP权重加载成功
-🔄 加载RemoteCLIP图像编码器: RN50
-📦 加载RemoteCLIP权重: ../checkpoints/RemoteCLIP-RN50.pt
-✅ RemoteCLIP权重加载成功
-✅ 模型加载成功 (Epoch 20, Loss: 0.1272)
-
-提取文本特征...
-
-加载测试数据...
-✅ 加载Mini Dataset (test): 15张图片
-  测试集: 15 张图
-
-开始推理...
-检测:   0%|          | 0/15 [00:00<?, ?it/s]检测:   7%|▋         | 1/15 [00:00<00:06,  2.19it/s]检测:  20%|██        | 3/15 [00:00<00:01,  6.07it/s]检测:  33%|███▎      | 5/15 [00:00<00:01,  9.22it/s]检测:  47%|████▋     | 7/15 [00:00<00:00, 11.38it/s]检测:  60%|██████    | 9/15 [00:00<00:00, 12.82it/s]检测:  73%|███████▎  | 11/15 [00:01<00:00, 13.47it/s]检测:  87%|████████▋ | 13/15 [00:01<00:00, 12.96it/s]检测: 100%|██████████| 15/15 [00:01<00:00, 14.49it/s]检测: 100%|██████████| 15/15 [00:01<00:00, 11.19it/s]
-
-收集完成:
-  预测框数量: 16
-  GT框数量: 61
-
-计算检测指标...
-
-======================================================================
-检测性能指标
-======================================================================
-
-📊 总体指标:
-  mAP@50:       0.0000
-  mAP@75:       0.0000
-  mAP@[.5:.95]: 0.0000
-  检测类别数:   12/20
-
-📋 各类别AP@50:
-  baseballfield            : 0.0000
-  bridge                   : 0.0000
-  chimney                  : 0.0000
-  Expressway-toll-station  : 0.0000
-  golffield                : 0.0000
-  groundtrackfield         : 0.0000
-  overpass                 : 0.0000
-  ship                     : 0.0000
-  tenniscourt              : 0.0000
-  trainstation             : 0.0000
-  vehicle                  : 0.0000
-  windmill                 : 0.0000
-
-✅ 结果保存到: outputs/full_detection_results.json
-
-可视化检测结果...
-Traceback (most recent call last):
-  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/evaluate_full_detection.py", line 378, in <module>
-    evaluate()
-  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/evaluate_full_detection.py", line 355, in evaluate
-    draw.rectangle(bbox, outline='green', width=3)
-  File "/media/ubuntu22/新加卷1/anaconda_envs/ovadetr/lib/python3.9/site-packages/PIL/ImageDraw.py", line 398, in rectangle
-    self.draw.draw_rectangle(xy, ink, 0, width)
-ValueError: x1 must be greater than or equal to x0

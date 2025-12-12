@@ -1,0 +1,80 @@
+# Experiment 4+8: Surgery CLIP + 文本引导稀疏分解配置
+
+# 模型配置
+model:
+  backbone: "ViT-B/32"
+  checkpoint_path: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+  embed_dim: 512
+  n_patches: 49  # 7x7 for 224x224
+  n_components: 20  # 原子模式数量
+  sparsity_ratio: 0.1  # 90%稀疏度
+
+# 训练配置
+training:
+  batch_size: 32
+  learning_rate: 1e-4
+  weight_decay: 1e-2
+  epochs: 50
+  warmup_epochs: 5
+  lr_scheduler: "cosine"
+  min_lr: 1e-6
+
+# 损失权重
+loss:
+  w_cls: 1.0  # 分类损失
+  w_loc: 1.0  # 定位损失
+  w_sparse: 0.1  # 稀疏性损失
+  w_ortho: 0.05  # 正交性损失
+  w_align: 0.3  # text-img对齐损失
+
+# WordNet配置
+wordnet:
+  k: 20  # 每个类别扩展词数
+  background_words:
+    - "background"
+    - "texture"
+    - "plain surface"
+    - "sky"
+    - "ground"
+
+# 数据集配置
+data:
+  dataset_root: "datasets/DIOR"
+  seen_classes: 15
+  unseen_classes: 5
+  image_size: 224
+  normalize_mean: [0.48145466, 0.4578275, 0.40821073]
+  normalize_std: [0.26862954, 0.26130258, 0.27577711]
+  # 推理相关参数
+  heatmap_threshold: 0.5
+  min_box_area: 20
+  nms_iou_threshold: 0.5
+  score_threshold: 0.3
+
+# 去噪配置
+denoising:
+  bg_threshold_quantile: 0.7
+  lowpass_kernel_size: 3
+  outlier_mad_multiplier: 3.0
+
+# 稀疏分解配置
+decomposition:
+  cross_attn_heads: 8
+  cross_attn_dropout: 0.1
+  sparsity_method: "topk"  # topk or threshold
+
+# Zero-shot配置
+zero_shot:
+  use_img_decomposer_for_unseen: true
+  use_ensemble: false
+  ensemble_weight_text: 0.7
+  ensemble_weight_img: 0.3
+
+# 推理配置
+inference:
+  mode: "full"  # "full" or "no_surgery"
+  # full: 使用CLIP Surgery去冗余（Ours，基于experiment6）
+  # no_surgery: 不使用冗余去除（消融实验，w/o surgery）
+  use_vv_mechanism: false  # 是否使用VV机制（需要重新加载模型）
+  num_vv_blocks: 6  # VV机制应用的层数
+

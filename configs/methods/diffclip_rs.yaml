@@ -1,0 +1,32 @@
+# Experiment 7: DiffCLIP 配置
+
+# 模型配置
+model:
+  backbone: "ViT-B/32"
+  checkpoint_path: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+  freeze_vision: true  # 冻结视觉编码器
+
+# 数据配置
+data:
+  dataset_root: "datasets/mini_dataset"
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+
+# 训练配置
+training:
+  epochs: 100
+  learning_rate: 1e-4
+  weight_decay: 1e-2
+  warmup_epochs: 5
+
+# DiffCLIP特定配置
+diffclip:
+  lambda_init: 0.1
+  use_rms_norm: true
+
+# 保存配置
+save:
+  checkpoint_dir: "outputs/checkpoints"
+  save_freq: 10
+

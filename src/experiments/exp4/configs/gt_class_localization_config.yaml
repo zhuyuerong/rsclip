@@ -1,0 +1,43 @@
+# GT类别定位实验配置
+# 只训练检测头，使用GT类别文本，验证定位能力
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+
+# Training configuration
+device: "cuda"
+num_epochs: 50
+batch_size: 8
+detection_head_lr: 1.0e-4  # 检测头学习率
+weight_decay: 0.01
+
+# Loss configuration
+lambda_l1: 1.0  # L1损失权重
+lambda_giou: 2.0  # GIoU损失权重
+pos_radius: 1.5  # 正样本半径
+pos_iou_threshold: 0.3  # 正样本匹配IoU阈值
+
+# Learning rate scheduling
+warmup_epochs: 5
+scheduler: "cosine"  # cosine annealing
+min_lr: 1e-6
+
+# Data configuration
+dataset_root: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/datasets/DIOR
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/gt_class_localization"
+output_dir: "outputs/gt_class_localization"
+
+# Evaluation configuration
+# 评估时使用这些参数
+
+

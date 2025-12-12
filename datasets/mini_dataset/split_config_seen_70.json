@@ -1,8 +1,0 @@
-{
-  "name": "seen_70",
-  "total_samples": 100,
-  "num_seen_classes": 10,
-  "num_unseen_classes": 10,
-  "train_samples": 70,
-  "test_samples": 30
-}

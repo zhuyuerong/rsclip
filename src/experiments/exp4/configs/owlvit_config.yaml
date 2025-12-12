@@ -1,0 +1,20 @@
+# OWL-ViT Configuration
+
+# Model configuration
+model_name: "google/owlvit-base-patch32"
+device: "cuda"
+
+# Data configuration
+dataset_root: null  # If null, will try to find in common locations
+batch_size: 4
+num_workers: 4
+image_size: 224
+
+# Evaluation configuration
+conf_threshold: 0.3
+nms_threshold: 0.5
+
+# Output configuration
+output_dir: "outputs"
+
+

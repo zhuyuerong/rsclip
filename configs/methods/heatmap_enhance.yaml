@@ -1,0 +1,49 @@
+# Experiment 5: 热图增强配置
+
+# 模型配置
+model:
+  model_path: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+  backbone: "ViT-B/32"
+
+# 数据集配置
+data:
+  dataset_root: "datasets/mini_dataset"
+  image_size: 224
+
+# 方法参数
+methods:
+  # Method 1: 自适应对比度增强
+  adaptive:
+    gamma: [2.0, 2.5, 3.0]  # 扫描范围
+    percentile: 98
+  
+  # Method 2: 多尺度融合
+  multiscale:
+    scales: [1.0, 1.5, 2.0]
+    fusion_mode: "max"  # max or mean
+  
+  # Method 3: 超分辨率输入
+  superres:
+    target_size: 448
+    interpolation: "bicubic"
+  
+  # Method 4: 高斯平滑上采样
+  smooth:
+    sigma: [1.5, 2.0, 2.5]  # 扫描范围
+
+# 评估配置
+eval:
+  size_bins:
+    tiny: [0, 32]
+    small: [32, 48]
+    medium: [48, 64]
+    large: [64, 999]
+  iou_thresholds: [0.3, 0.5, 0.7]
+  heatmap_threshold: 0.6
+  min_box_area: 10
+
+# 实验配置
+experiment:
+  max_samples: 200
+  batch_size: 1
+

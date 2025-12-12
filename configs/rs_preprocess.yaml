@@ -1,0 +1,29 @@
+# 遥感预处理配置
+
+# 图像预处理
+image:
+  resize: [224, 224]  # 或 [800, 800]
+  normalize_mean: [0.48145466, 0.4578275, 0.40821073]  # CLIP标准化
+  normalize_std: [0.26862954, 0.26130258, 0.27577711]
+
+# 数据增强
+augmentation:
+  enabled: true
+  horizontal_flip: 0.5
+  color_jitter:
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+
+# 多尺度处理
+multiscale:
+  enabled: false
+  scales: [1.0, 1.5, 2.0]
+
+# 切片处理
+tiling:
+  enabled: false
+  tile_size: [512, 512]
+  overlap: 64
+

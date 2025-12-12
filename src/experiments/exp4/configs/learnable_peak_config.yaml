@@ -1,0 +1,47 @@
+# 可学习峰值检测配置
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+upsample_cam: false
+
+# Training configuration
+device: "cuda"
+num_epochs: 50
+batch_size: 8
+learning_rate: 1.0e-4
+cam_generator_lr: 5.0e-5
+weight_decay: 0.01
+
+# Loss configuration
+lambda_l1: 1.0
+lambda_giou: 1.0
+lambda_cam: 2.0
+lambda_peak: 0.5  # 峰值检测损失权重（新增）
+
+# Learnable peak detector configuration
+use_learnable_peak_detector: true
+init_threshold: 0.3
+min_peak_distance: 2
+match_iou_threshold: 0.2
+use_objectness: true  # 使用objectness score辅助峰值检测
+
+# Data configuration
+dataset_root: null
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/learnable_peak"
+output_dir: "outputs/experiments/learnable_peak"
+
+# Evaluation configuration
+conf_threshold: 0.1
+nms_threshold: 0.5
+
+

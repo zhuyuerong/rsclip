@@ -1,0 +1,30 @@
+/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/remoteclip/lib/python3.11/site-packages/timm/models/registry.py:4: FutureWarning: Importing from timm.models.registry is deprecated, please import via timm.models
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.models", FutureWarning)
+/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/remoteclip/lib/python3.11/site-packages/timm/models/layers/__init__.py:48: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
+  warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
+使用设备: cuda
+创建简化SurgeryCAM模型...
+Loading SimpleSurgeryCAM (no p2p, no AAF)...
+📥 加载权重: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/checkpoints/RemoteCLIP-ViT-B-32.pt
+🔧 使用Surgery架构（有VV注意力）
+✅ 模型加载成功
+✅ CAM生成器的可学习投影层已解冻
+Trainable parameters: 920,564
+✅ 已加载checkpoint: checkpoints/best_simple_model.pth
+   Epoch: 95
+   Loss: 2.4584
+   已加载 13 个可训练参数
+限制评估样本数量: 100/11738
+
+开始评估...
+评估中:   0%|          | 0/13 [00:00<?, ?it/s]评估中:   8%|▊         | 1/13 [00:01<00:19,  1.59s/it]评估中:  31%|███       | 4/13 [00:01<00:03,  2.94it/s]评估中:  46%|████▌     | 6/13 [00:01<00:01,  4.56it/s]评估中:  62%|██████▏   | 8/13 [00:02<00:00,  5.91it/s]评估中:  77%|███████▋  | 10/13 [00:02<00:00,  7.50it/s]评估中:  92%|█████████▏| 12/13 [00:02<00:00,  9.15it/s]评估中: 100%|██████████| 13/13 [00:02<00:00,  4.89it/s]
+Traceback (most recent call last):
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/src/experiments/exp4/evaluate_simple_model.py", line 232, in <module>
+    main()
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/src/experiments/exp4/evaluate_simple_model.py", line 194, in main
+    seen_map = [map_results['per_class_ap'][i] for i in seen_indices]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/src/experiments/exp4/evaluate_simple_model.py", line 194, in <listcomp>
+    seen_map = [map_results['per_class_ap'][i] for i in seen_indices]
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^
+KeyError: 'per_class_ap'

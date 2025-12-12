@@ -1,0 +1,68 @@
+# OVA-DETR RS 配置文件
+# 适配遥感数据集（DIOR, DOTA, LAE-1M）
+
+method: ova_detr_rs
+
+# 数据集配置
+data:
+  dataset_type: "DIOR"  # DIOR, DOTA, LAE-1M
+  dataset_root: "datasets/DIOR"
+  split: "train"
+  
+  # Seen/Unseen分割配置
+  seen_unseen:
+    enabled: true
+    seen_ratio: 0.5
+    split_method: "random"
+    seen_classes: null
+    seed: 42
+  
+  # DIOR配置
+  dior:
+    anno_type: "horizontal"
+    classes: null
+
+# 模型配置
+model:
+  backbone: "ResNet50"
+  num_queries: 300
+  hidden_dim: 256
+  nheads: 8
+  num_encoder_layers: 6
+  num_decoder_layers: 6
+
+# 训练配置
+training:
+  batch_size: 8
+  learning_rate: 0.0001
+  num_epochs: 50
+  
+  # Loss配置
+loss:
+    type: "detr"  # detr, custom
+    cls_loss_weight: 2.0
+    box_loss_weight: 5.0
+    giou_loss_weight: 2.0
+  
+  # 优化器配置
+  optimizer:
+    type: "AdamW"
+    weight_decay: 0.0001
+    lr_scheduler: "warmup_cosine"
+    warmup_iters: 1000
+
+# 数据增强配置
+augmentation:
+  type: "ResizeShortestEdge"
+  min_size_train: 640
+  max_size_train: 1333
+  min_size_test: 800
+  max_size_test: 1333
+  random_flip: true
+
+# 评估配置
+evaluation:
+  iou_threshold: 0.5
+  score_threshold: 0.3
+  eval_seen: true
+  eval_unseen: true

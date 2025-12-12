@@ -1,0 +1,56 @@
+# 改进检测器配置
+# 原图 + 多层特征 + 多层CAM
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+unfreeze_cam_last_layer: true
+
+# Training configuration
+device: "cuda"
+num_epochs: 250  # 继续训练100个epoch（从150开始，总共250）
+batch_size: 8
+learning_rate: 5.0e-5  # 降低学习率（从1e-4降到5e-5，修复scheduler失效问题）
+cam_generator_lr: 2.5e-5  # 降低CAM生成器学习率（从5e-5降到2.5e-5）
+cam_fusion_lr: 5.0e-5  # 降低CAM融合学习率（从1e-4降到5e-5）
+image_encoder_lr: 5.0e-5  # 降低原图编码器学习率（从1e-4降到5e-5）
+weight_decay: 0.01
+
+# Loss configuration
+lambda_l1: 2.0  # 增加L1权重（P1）
+lambda_giou: 2.0
+lambda_conf: 0.5  # 降低Conf权重（P1）
+lambda_cam: 0.0  # 移除CAM损失
+focal_alpha: 0.25
+focal_gamma: 2.0
+pos_radius: 2.5  # 增加正样本半径（P0：从1.5增加到2.5）
+pos_iou_threshold: 0.15  # 降低IoU阈值（P0：从0.3降到0.15，目标正样本比例>5%）
+
+# Learning rate scheduling
+warmup_epochs: 5
+scheduler: "cosine"  # cosine annealing
+min_lr: 1e-6
+
+# Data configuration
+dataset_root: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/datasets/DIOR
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/improved_detector"
+output_dir: "outputs/experiments/improved_detector"
+
+# Evaluation configuration
+conf_threshold: 0.3
+nms_threshold: 0.5
+
+# Monitoring
+monitor_cam_quality: true
+monitor_pos_ratio: true
+monitor_layer_weights: true
+

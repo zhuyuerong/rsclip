@@ -1,0 +1,80 @@
+# Detic RS 配置文件
+# 适配遥感数据集（DIOR, DOTA, LAE-1M）
+
+method: detic_rs
+
+# 数据集配置
+data:
+  dataset_type: "DIOR"  # DIOR, DOTA, LAE-1M
+  dataset_root: "datasets/DIOR"  # 数据集根目录
+  split: "train"  # train, val, test
+  
+  # Seen/Unseen分割配置
+  seen_unseen:
+    enabled: true  # 是否启用seen/unseen分割
+    seen_ratio: 0.5  # seen类别比例（0-1之间）
+    split_method: "random"  # random, first, last, custom
+    seen_classes: null  # 如果split_method=custom，指定seen类别列表
+    seed: 42  # 随机种子
+  
+  # DIOR配置
+  dior:
+    anno_type: "horizontal"  # horizontal, oriented
+    classes: null  # null表示使用全部类别
+  
+  # DOTA配置
+  dota:
+    annotation_dir: "annotations"  # 标注目录
+    use_rotated_boxes: false  # 是否使用旋转框
+  
+  # LAE-1M配置
+  lae1m:
+    annotation_file: "LAE-80C-benchmark.json"  # COCO格式标注文件
+
+# 模型配置
+model:
+  backbone: "ResNet50"  # ResNet50, Swin-B
+  use_zeroshot_cls: true  # 使用zero-shot分类器
+  zeroshot_weight_path: ""  # CLIP权重路径（通过config设置）
+  zeroshot_weight_dim: 512
+  norm_weight: true
+  norm_temp: 50.0
+
+# 训练配置
+training:
+  batch_size: 8
+  learning_rate: 0.01
+  num_epochs: 50
+  
+  # Loss配置
+  loss:
+    type: "detic"  # detic, standard, custom
+    image_label_loss: "max_size"  # max, softmax, sum
+    image_loss_weight: 0.1
+    cls_loss_weight: 1.0
+    box_loss_weight: 1.0
+  
+  # 优化器配置
+  optimizer:
+    type: "SGD"  # SGD, Adam, AdamW
+    momentum: 0.9
+    weight_decay: 0.0001
+    lr_scheduler: "warmup_cosine"  # warmup_cosine, step, polynomial
+    warmup_iters: 1000
+    warmup_factor: 0.001
+
+# 数据增强配置
+augmentation:
+  type: "ResizeShortestEdge"  # ResizeShortestEdge, EfficientDetResizeCrop
+  min_size_train: 640
+  max_size_train: 1333
+  min_size_test: 800
+  max_size_test: 1333
+  random_flip: true
+
+# 评估配置
+evaluation:
+  iou_threshold: 0.5
+  score_threshold: 0.3
+  eval_seen: true  # 是否评估seen类别
+  eval_unseen: true  # 是否评估unseen类别

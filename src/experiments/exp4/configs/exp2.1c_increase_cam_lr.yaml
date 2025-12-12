@@ -1,0 +1,45 @@
+# 实验2.1c: 增加CAM生成器学习率
+# 从1e-5增加到5e-5
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+upsample_cam: false
+
+# Training configuration
+device: "cuda"
+num_epochs: 20  # 快速测试
+batch_size: 8
+learning_rate: 1.0e-4
+cam_generator_lr: 5.0e-5  # 从1e-5增加到5e-5
+weight_decay: 0.01
+
+# Loss configuration
+lambda_l1: 1.0
+lambda_giou: 2.0
+lambda_cam: 0.5
+
+# Multi-instance assigner configuration
+min_peak_distance: 2
+min_peak_value: 0.3
+match_iou_threshold: 0.3
+
+# Data configuration
+dataset_root: null
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/exp2.1c"
+output_dir: "outputs/experiments/exp2.1c"
+
+# Evaluation configuration
+conf_threshold: 0.1
+nms_threshold: 0.5
+
+

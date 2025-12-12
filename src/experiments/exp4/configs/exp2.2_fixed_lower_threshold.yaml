@@ -1,0 +1,45 @@
+# 实验2.2修复版: 改进正样本分配（降低峰值阈值）
+# 修复峰值检测失败的问题
+
+# Model configuration
+surgery_clip_checkpoint: "checkpoints/RemoteCLIP-ViT-B-32.pt"
+num_classes: 20
+cam_resolution: 7
+upsample_cam: false
+
+# Training configuration
+device: "cuda"
+num_epochs: 50  # 先训练50个epoch看效果
+batch_size: 8
+learning_rate: 1.0e-4
+cam_generator_lr: 5.0e-5  # 增加CAM生成器学习率
+weight_decay: 0.01
+
+# Loss configuration - 增加CAM损失权重
+lambda_l1: 1.0
+lambda_giou: 1.0  # 降低GIoU权重
+lambda_cam: 2.0  # 增加CAM损失权重，提升CAM质量
+
+# Multi-instance assigner configuration - 关键修复
+min_peak_distance: 2
+min_peak_value: 0.05  # 大幅降低阈值：从0.3降到0.05
+match_iou_threshold: 0.2  # 降低匹配阈值，更容易匹配
+
+# Data configuration
+dataset_root: null
+num_workers: 4
+image_size: 224
+augment: true
+train_only_seen: true
+
+# Logging and saving
+log_interval: 50
+save_interval: 10
+checkpoint_dir: "checkpoints/exp2.2_fixed"
+output_dir: "outputs/experiments/exp2.2_fixed"
+
+# Evaluation configuration
+conf_threshold: 0.05  # 降低评估阈值
+nms_threshold: 0.5
+
+

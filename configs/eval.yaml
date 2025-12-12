@@ -1,0 +1,30 @@
+# 评估配置
+
+# 检测评估
+detection:
+  iou_thresholds: [0.3, 0.5, 0.7]
+  score_threshold: 0.3
+  compute_map: true
+  compute_ap_per_class: true
+
+# 开放词汇评估
+open_vocabulary:
+  seen_classes: []  # 从数据集自动获取
+  unseen_classes: []
+  compute_harmonic_mean: true
+
+# 热图评估
+heatmap:
+  size_bins:
+    tiny: [0, 32]
+    small: [32, 48]
+    medium: [48, 64]
+    large: [64, 999]
+  metrics: ["recall", "precision", "iou"]
+
+# 输出配置
+output:
+  save_results: true
+  save_visualizations: true
+  output_dir: "outputs/eval_results"
+

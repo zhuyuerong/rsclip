@@ -1,0 +1,123 @@
+_wandb:
+    value:
+        cli_version: 0.22.2
+        e:
+            s98sdfry62yhkcj8cw9ikpeayvudm3wg:
+                args:
+                    - --dataset
+                    - DIOR
+                    - --mode
+                    - seen
+                    - --epochs
+                    - "50"
+                    - --batch_size
+                    - "2"
+                    - --image_size
+                    - "800"
+                    - --use_wandb
+                    - --run_name
+                    - DIOR_seen_800_50epochs
+                    - --output_dir
+                    - experiment2/outputs/checkpoints/DIOR_800_50epochs
+                codePath: experiment2/scripts/train.py
+                codePathLocal: experiment2/scripts/train.py
+                cpu_count: 20
+                cpu_count_logical: 28
+                cudaVersion: "12.2"
+                disk:
+                    /:
+                        total: "92749000704"
+                        used: "78823714816"
+                email: 3074143509@qq.com
+                executable: /media/ubuntu22/新加卷1/anaconda_envs/ovadetr/bin/python3.9
+                git:
+                    commit: dde5d8a2de63005093dbdd0ebb43cb4639f4b875
+                gpu: NVIDIA GeForce RTX 4090
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ada
+                      cudaCores: 16384
+                      memoryTotal: "25757220864"
+                      name: NVIDIA GeForce RTX 4090
+                      uuid: GPU-82080d2e-1c86-7316-cdae-683d7901f7a0
+                host: ubuntu22
+                memory:
+                    total: "33316122624"
+                os: Linux-6.8.0-85-generic-x86_64-with-glibc2.35
+                program: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/experiment2/scripts/train.py
+                python: CPython 3.9.23
+                root: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main
+                startedAt: "2025-11-03T09:37:32.248583Z"
+                writerId: s98sdfry62yhkcj8cw9ikpeayvudm3wg
+        m: []
+        python_version: 3.9.23
+        t:
+            "1":
+                - 1
+                - 41
+                - 49
+                - 63
+            "2":
+                - 1
+                - 41
+                - 49
+                - 63
+            "3":
+                - 2
+                - 13
+                - 16
+                - 61
+            "4": 3.9.23
+            "5": 0.22.2
+            "10":
+                - 20
+            "12": 0.22.2
+            "13": linux-x86_64
+batch_size:
+    value: 2
+checkpoint_path:
+    value: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/checkpoints/RemoteCLIP-RN50.pt
+data_dir:
+    value: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/datasets/DIOR
+dataset:
+    value: DIOR
+epochs:
+    value: 50
+image_size:
+    value: 800
+lr:
+    value: 0.0001
+mode:
+    value: seen
+model_name:
+    value: RN50
+num_workers:
+    value: 4
+output_dir:
+    value: experiment2/outputs/checkpoints/DIOR_800_50epochs
+project_name:
+    value: Experiment2-TextDriven
+run_name:
+    value: DIOR_seen_800_50epochs
+save_freq:
+    value: 5
+train_classes:
+    value:
+        - airplane
+        - ship
+        - vehicle
+        - bridge
+        - harbor
+        - storagetank
+        - overpass
+        - dam
+        - baseballfield
+        - chimney
+        - Expressway-Service-area
+        - Expressway-toll-station
+        - golffield
+        - groundtrackfield
+        - tenniscourt
+        - trainstation
+use_wandb:
+    value: true

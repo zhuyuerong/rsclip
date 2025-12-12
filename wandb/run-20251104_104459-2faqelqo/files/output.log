@@ -1,0 +1,46 @@
+✅ Wandb初始化成功: Experiment2-TextDriven/DIOR_MultiQuery_5x_50epochs
+
+加载数据...
+✅ 加载DIOR数据集 (train): 5013张图片 (过滤到16个类别)
+✅ 加载DIOR数据集 (val): 5863张图片
+训练集: 5013 张图
+验证集: 5863 张图
+
+创建模型...
+
+初始化文本驱动检测器...
+🔄 加载RemoteCLIP文本编码器: RN50
+WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
+📦 加载RemoteCLIP权重: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/checkpoints/RemoteCLIP-RN50.pt
+✅ RemoteCLIP权重加载成功
+  ✅ Text Encoder (RemoteCLIP, 冻结)
+🔄 加载RemoteCLIP图像编码器: RN50
+WARNING:root:No pretrained weights loaded for model 'RN50'. Model initialized randomly.
+📦 加载RemoteCLIP权重: /media/ubuntu22/新加卷1/Projects/RemoteCLIP-main/checkpoints/RemoteCLIP-RN50.pt
+✅ RemoteCLIP权重加载成功
+  📏 原始位置编码: 50个 (7×7+1)
+  🔧 插值位置编码: 7×7 → 25×25
+  ✅ 位置编码插值完成: 626个位置
+  ✅ Image Encoder (RemoteCLIP, 冻结)
+  ✅ Text→Position Network (学习类别的典型位置)
+  ✅ Multi-Scale Feature Extractor (从位置提取Query特征)
+  ✅ Box Refinement Network (精修框位置)
+
+模型初始化完成！
+
+模型参数统计:
+  总参数: 211,508,829
+  可训练参数: 108,322,044 (51.2%)
+  - TextEncoder: 102,007,137 参数 (102,007,137 可训练) ✅ 可训练
+  - ImageEncoder: 103,186,785 参数 (0 可训练) 🔒 冻结
+  - TextToPosition: 1,189,143 参数 (1,189,143 可训练) ✅ 可训练
+  - FeatureExtractor: 4,334,208 参数 (4,334,208 可训练) ✅ 可训练
+  - BoxRefiner: 791,556 参数 (791,556 可训练) ✅ 可训练
+
+提取文本特征...
+  训练文本特征: torch.Size([16, 1024]) (base类)
+  全部文本特征: torch.Size([20, 1024]) (base+novel类)
+
+开始训练...
+Epoch 1: 100%|██████████| 2507/2507 [02:42<00:00, 15.45it/s, loss=3.5091, pos=0.0795, contrast=2.6505, bbox=0.0938]
+Validation:   0%|          | 0/2932 [00:00<?, ?it/s]
