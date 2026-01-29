@@ -231,6 +231,18 @@ class QuickGELU(nn.Module):
         return x * torch.sigmoid(1.702 * x)
 
 
+class Adapter(nn.Module):
+    """轻量适配器，用于VV路径微调"""
+    def __init__(self, dim: int, bottleneck_dim: int = 64):
+        super().__init__()
+        self.down = nn.Linear(dim, bottleneck_dim)
+        self.act = QuickGELU()
+        self.up = nn.Linear(bottleneck_dim, dim)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.up(self.act(self.down(x)))
+
+
 class ResidualAttentionBlock(nn.Module):
     def __init__(self, d_model: int, n_head: int, attn_mask: torch.Tensor = None):
         super().__init__()
@@ -244,6 +256,8 @@ class ResidualAttentionBlock(nn.Module):
         ]))
         self.ln_2 = LayerNorm(d_model)
         self.attn_mask = attn_mask
+        self.vv_adapter = None
+        self.vv_ln = None
 
     def attention(self, x: torch.Tensor):
         self.attn_mask = self.attn_mask.to(dtype=x.dtype, device=x.device) if self.attn_mask is not None else None
@@ -265,6 +279,8 @@ class ResidualAttentionBlock(nn.Module):
                 x_ori += x_ori_res
                 x_ori = x_ori + self.mlp(self.ln_2(x_ori))
                 x += x_res # skip ffn for the new path
+                if self.vv_adapter is not None and self.vv_ln is not None:
+                    x = x + self.vv_adapter(self.vv_ln(x))
                 return [x, x_ori]
 
             # start of dual path
@@ -275,6 +291,8 @@ class ResidualAttentionBlock(nn.Module):
                     x_ori = x + x_ori_res
                     x_ori = x_ori + self.mlp(self.ln_2(x_ori))
                     x += x_res
+                    if self.vv_adapter is not None and self.vv_ln is not None:
+                        x = x + self.vv_adapter(self.vv_ln(x))
                     return [x, x_ori]
 
         # singl path before "d"
@@ -311,6 +329,7 @@ class VisionTransformer(nn.Module):
         self.attn = None
         self.embed_dim = width
         self.num_heads = heads
+        self.surgery_layers = 6
 
         self.ln_post = LayerNorm(width)
         self.proj = nn.Parameter(scale * torch.randn(width, output_dim))
@@ -406,6 +425,69 @@ class VisionTransformer(nn.Module):
 
         # Return tokens before final projection
         # x: [B, 1+N², D] where D is the transformer width
+        return x
+
+    def enable_vv_adapters(self, bottleneck_dim: int = 64, layers: int = 6):
+        """在VV路径插入轻量Adapter（仅影响最后若干层）"""
+        for i in range(1, layers + 1):
+            block = self.transformer.resblocks[-i]
+            block.vv_adapter = Adapter(self.embed_dim, bottleneck_dim)
+            block.vv_ln = LayerNorm(self.embed_dim)
+        self.surgery_layers = layers
+
+    def encode_image_with_intermediate_tokens(self, x: torch.Tensor, stop_at_layer: int = None):
+        """
+        返回中间层tokens（NLD），用于热图监督。
+        stop_at_layer:
+            - None: 运行所有层
+            - 正整数: 运行到该层（不含该层之后）
+            - 负整数: 运行到倒数第|k|层之前
+        """
+        # reform the architecture during first inference if needed
+        if self.attn == None:
+            for i in range(1, self.surgery_layers + 1):
+                self.attn = Attention(self.embed_dim, self.embed_dim, self.num_heads, True)
+                self.attn.qkv.weight.data = self.transformer.resblocks[-i].attn.in_proj_weight.clone()
+                self.attn.qkv.bias.data = self.transformer.resblocks[-i].attn.in_proj_bias.clone()
+                self.attn.proj.weight.data = self.transformer.resblocks[-i].attn.out_proj.weight.clone()
+                self.attn.proj.bias.data = self.transformer.resblocks[-i].attn.out_proj.bias.clone()
+                self.transformer.resblocks[-i].attn = self.attn
+
+        x = self.conv1(x)  # shape = [*, width, grid, grid]
+        x = x.reshape(x.shape[0], x.shape[1], -1)  # shape = [*, width, grid ** 2]
+        x = x.permute(0, 2, 1)  # shape = [*, grid ** 2, width]
+        x = torch.cat([self.class_embedding.to(x.dtype) + torch.zeros(x.shape[0], 1, x.shape[-1], dtype=x.dtype, device=x.device), x], dim=1)
+        side = int((self.positional_embedding.shape[0] - 1) ** 0.5)
+        new_side = int((x.shape[1] - 1) ** 0.5)
+        if side != new_side:
+            new_pos = self.positional_embedding[1:, :].reshape(-1, side, side, x.shape[-1]).permute(0, 3, 1, 2)
+            new_pos = torch.nn.functional.interpolate(new_pos, (new_side, new_side), mode='bilinear')
+            new_pos = new_pos.reshape(-1, x.shape[-1], new_side * new_side).transpose(1, 2)
+            self.positional_embedding.data = torch.cat([self.positional_embedding[:1, :], new_pos[0]], 0)
+
+        pos = self.positional_embedding.to(x.dtype)
+        x = x + pos
+        x = self.ln_pre(x)
+
+        x = x.permute(1, 0, 2)  # NLD -> LND
+
+        total_layers = len(self.transformer.resblocks)
+        if stop_at_layer is None:
+            stop_at_layer = total_layers
+        elif stop_at_layer < 0:
+            stop_at_layer = total_layers + stop_at_layer
+        stop_at_layer = max(0, min(stop_at_layer, total_layers))
+
+        for i, block in enumerate(self.transformer.resblocks):
+            if i >= stop_at_layer:
+                break
+            x = block(x)
+
+        if isinstance(x, list):
+            x = x[0]
+
+        x = x.permute(1, 0, 2)  # LND -> NLD
+        x = self.ln_post(x)
         return x
 
 

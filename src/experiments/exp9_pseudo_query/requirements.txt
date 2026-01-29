@@ -1,0 +1,48 @@
+# ============================================================
+# Exp9 Pseudo Query 实验环境依赖
+# ============================================================
+# 
+# 安装方法:
+#   conda activate samrs
+#   pip install -r requirements.txt
+#
+# ============================================================
+
+# 核心深度学习框架
+torch==1.10.1+cu113
+torchvision==0.11.2+cu113
+torchaudio==0.10.1+cu113
+
+# 基础科学计算
+numpy==1.24.4
+scipy==1.10.1
+
+# 图像处理
+opencv-python==4.8.0.74
+Pillow==9.5.0
+
+# 可视化
+matplotlib==3.7.5
+
+# 工具库
+tqdm==4.67.1
+pycocotools
+cython
+
+# 训练工具
+torch-ema==0.3
+torchmetrics==0.11.4
+
+# 数据处理
+lxml  # 用于解析DIOR的VOC XML格式
+
+# CLIP相关 (RemoteCLIP)
+ftfy
+regex
+
+# 可选: 日志和可视化
+# tensorboard  # 已移除依赖
+# wandb
+
+# Deformable DETR CUDA算子编译依赖
+# 注意: 需要手动编译，见README.md
