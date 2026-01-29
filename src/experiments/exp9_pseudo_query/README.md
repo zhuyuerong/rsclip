@@ -31,10 +31,41 @@ exp9_pseudo_query/
 ├── configs/
 │   ├── experiment_config.py       # 旧版配置
 │   └── experiment_config_v2.py    # 新版配置 (正交设计) ✓
+├── scripts/
+│   ├── train_a0_baseline.py       # A0训练脚本 (标准DETR)
+│   ├── train_pseudo_query.py      # A2/A3训练脚本 (Pseudo Query)
+│   └── run_*.sh                   # 实验运行脚本
+├── datasets/
+│   ├── dior_deformable.py         # DIOR数据集
+│   └── dior_with_heatmap.py       # DIOR+热图数据集
 ├── utils/
 │   └── run_manager.py             # 可审计训练协议 ✓
 ├── test_modules.py                # 模块测试 ✓
+├── DEPENDENCIES.md                # ⚠️ 依赖说明 (重要!)
 └── README.md
+```
+
+### ⚠️ 重要依赖
+
+**本实验依赖标准Deformable DETR代码库**，位于`external/Deformable-DETR/`:
+
+```
+external/Deformable-DETR/          # ✅ 必需: 标准Deformable DETR实现
+├── models/
+│   ├── deformable_detr.py         # 核心模型
+│   ├── matcher.py                 # Hungarian Matcher
+│   └── ops/                       # ⚠️ 必需编译CUDA算子
+└── util/
+    ├── misc.py                    # 工具函数
+    └── box_ops.py                 # Box操作
+```
+
+**详细说明请参考**: [`DEPENDENCIES.md`](DEPENDENCIES.md)
+
+**快速检查**:
+```bash
+# 验证Deformable DETR是否完整
+bash scripts/verify_environment.sh
 ```
 
 ---

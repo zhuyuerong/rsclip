@@ -152,16 +152,22 @@ src/experiments/exp9_pseudo_query/
 
 ---
 
-### 7. 文档文件 (6个)
+### 7. 文档文件 (8个)
 
 | 文件 | 行数 | 说明 | 状态 |
 |------|------|------|------|
-| `README.md` | ~346 | 项目文档 | ✅ |
+| `README.md` | ~370 | 项目文档 (已更新依赖说明) | ✅ |
+| `DEPENDENCIES.md` | ~520 | ⚠️ 依赖说明 (重要!) | ✅ |
+| `GITHUB_UPLOAD_GUIDE.md` | ~480 | GitHub上传指南 | ✅ |
 | `NEXT_STEPS.md` | ~250 | 4周实验计划 | ✅ |
 | `EXPERIMENT_CHECKLIST.md` | ~600 | 实验完整清单 | ✅ |
 | `SETUP_SUMMARY.md` | ~400 | 环境配置总结 | ✅ |
 | `QUICK_REFERENCE.md` | ~150 | 快速参考 | ✅ |
-| `FILES_INVENTORY.md` | - | 本文件 | ✅ |
+| `FILES_INVENTORY.md` | ~350 | 本文件 | ✅ |
+
+**新增文档**:
+- `DEPENDENCIES.md`: 详细说明Deformable DETR依赖及获取方式
+- `GITHUB_UPLOAD_GUIDE.md`: 上传到GitHub的完整指南
 
 ---
 
@@ -189,9 +195,9 @@ src/experiments/exp9_pseudo_query/
 |------|------|---------------|
 | Python代码 | 14 | ~5,500 |
 | Shell脚本 | 6 | ~500 |
-| Markdown文档 | 6 | ~2,000 |
+| Markdown文档 | 8 | ~3,000 |
 | 配置文件 | 1 | ~40 |
-| **总计** | **27** | **~8,040** |
+| **总计** | **29** | **~9,040** |
 
 ### 按功能统计
 
@@ -203,7 +209,7 @@ src/experiments/exp9_pseudo_query/
 | 配置 | 2 | 实验配置 |
 | 工具 | 2 | 管理器 + 验证 |
 | 测试 | 1 | 单元测试 |
-| 文档 | 6 | 完整文档 |
+| 文档 | 8 | 完整文档 (含依赖说明) |
 
 ---
 
@@ -253,10 +259,34 @@ external/
 - [x] 文档文件: 6/6 ✅
 - [x] 依赖清单: 1/1 ✅
 
-### 外部依赖 (全部就绪)
+### 外部依赖
 
-- [x] Deformable DETR ✅
-- [x] CUDA算子编译 ✅
+#### 代码依赖
+
+| 依赖 | 来源 | 获取方式 | 状态 |
+|------|------|----------|------|
+| **Deformable DETR** | [官方仓库](https://github.com/fundamentalvision/Deformable-DETR) | Git Submodule 或 手动克隆 | ⚠️ 必需 |
+| CUDA算子 | Deformable DETR内置 | 需要编译 (`bash make.sh`) | ⚠️ 必需 |
+
+**说明**:
+- Deformable DETR是标准的第三方实现，实验9的A0/A2/A3都依赖它
+- 位置: `external/Deformable-DETR/`
+- 详细说明: [`DEPENDENCIES.md`](DEPENDENCIES.md)
+
+**快速设置**:
+```bash
+# 方法1: 使用Git Submodule (推荐)
+git submodule update --init --recursive
+cd external/Deformable-DETR/models/ops && bash make.sh
+
+# 方法2: 手动克隆
+cd external/
+git clone https://github.com/fundamentalvision/Deformable-DETR.git
+cd Deformable-DETR/models/ops && bash make.sh
+```
+
+#### 数据依赖
+
 - [x] DIOR数据集 ✅
 - [x] RemoteCLIP权重 ✅
 
@@ -294,6 +324,7 @@ external/
 | 2026-01-28 | 添加数据集和热图支持 | +3 |
 | 2026-01-29 | 完成A0/A2/A3/B1/B2脚本 | +9 |
 | 2026-01-29 | 添加文档和工具 | +6 |
+| 2026-01-29 | 添加依赖说明和上传指南 | +2 |
 
 ---
 
